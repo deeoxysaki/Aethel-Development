@@ -17,10 +17,7 @@
                     fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
                     colors: { glass: "rgba(255, 255, 255, 0.9)", glassBorder: "rgba(255, 255, 255, 0.4)" },
                     animation: { 'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)', 'fade-in': 'fadeIn 0.3s ease-out' },
-                    keyframes: {
-                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
-                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } }
-                    }
+                    keyframes: { slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }, fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } } }
                 }
             }
         }
@@ -40,9 +37,8 @@
 </head>
 <body class="flex items-center justify-center p-4 h-screen w-screen relative">
 
-    <!-- LOGIN WRAPPER -->
+    <!-- LOGIN -->
     <div id="auth-wrapper" class="w-full max-w-md animate-slide-up z-50">
-        <!-- EMAIL -->
         <div id="login-container" class="glass-panel p-8 rounded-2xl shadow-2xl relative bg-white/80">
             <div class="mb-6 flex justify-center"><div class="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-2xl shadow-lg"><i data-lucide="lock" class="w-8 h-8 text-white"></i></div></div>
             <h1 class="text-3xl font-bold mb-2 text-gradient tracking-tight">Aethel Locker</h1>
@@ -52,8 +48,6 @@
                 <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 rounded-xl hover:shadow-lg transform transition active:scale-95">Check Access</button>
             </form>
         </div>
-
-        <!-- API KEY -->
         <div id="apikey-container" class="glass-panel p-8 rounded-2xl shadow-2xl bg-white/80 hidden relative">
             <button onclick="backToEmail()" class="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100 text-gray-400"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
             <div class="mb-6 flex justify-center"><div class="bg-gray-100 p-4 rounded-2xl"><i data-lucide="key" class="w-8 h-8 text-gray-600"></i></div></div>
@@ -65,15 +59,12 @@
             </form>
             <p id="api-error" class="text-red-500 text-sm mt-4 hidden text-center bg-red-50 py-2 rounded-lg"></p>
         </div>
-
-        <!-- 2FA -->
         <div id="2fa-email-modal" class="glass-panel p-8 rounded-2xl shadow-2xl bg-white/80 hidden relative text-center">
             <div class="mb-6 flex justify-center"><div class="bg-blue-100 p-4 rounded-full animate-pulse"><i data-lucide="mail" class="w-8 h-8 text-blue-600"></i></div></div>
             <h2 class="text-xl font-bold text-gray-800">Verification Required</h2>
-            <p class="text-gray-500 mt-2 text-sm">Secure link sent to <br><span id="2fa-target-email" class="font-bold text-gray-700"></span></p>
+            <p class="text-gray-500 mt-2 text-sm">Link sent to <span id="2fa-target-email" class="font-bold"></span></p>
             <button onclick="openPinEntry()" class="mt-6 w-full bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition">Verify Identity</button>
         </div>
-
         <div id="2fa-pin-modal" class="glass-panel p-8 rounded-2xl shadow-2xl bg-white/80 hidden relative text-center">
             <div class="mb-4"><i data-lucide="shield-check" class="w-8 h-8 text-green-600 mx-auto"></i></div>
             <h2 class="text-lg font-bold text-gray-800 mb-4">Enter PIN Code</h2>
@@ -101,89 +92,56 @@
 
         <!-- Main -->
         <main class="flex-1 bg-white/40 overflow-hidden relative flex flex-col">
-            <!-- Projects -->
+            <!-- Projects View -->
             <div id="view-projects" class="flex-1 overflow-y-auto p-10 animate-fade-in">
                 <header class="flex justify-between items-end mb-10"><div><h2 class="text-3xl font-bold text-gray-800">Projects</h2></div><button onclick="openCreateModal()" class="bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-800 flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> New Project</button></header>
                 <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
                 <div id="empty-state" class="hidden flex-col items-center justify-center text-center p-20 border-2 border-dashed border-gray-200 rounded-3xl"><i data-lucide="folder-plus" class="w-10 h-10 text-gray-300 mb-4"></i><h3 class="text-xl font-bold text-gray-900">No projects yet</h3><button onclick="openCreateModal()" class="text-blue-600 font-bold mt-2 hover:underline">Create Project</button></div>
             </div>
 
-            <!-- Admin API -->
-            <div id="view-admin-api" class="hidden flex-1 overflow-y-auto p-10 animate-fade-in">
-                <header class="mb-10"><h2 class="text-3xl font-bold text-gray-800">API Management</h2></header>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-fit">
-                        <h3 class="font-bold text-gray-800 mb-4">Generate Key</h3>
-                        <div class="space-y-4">
-                            <div><label class="block text-sm font-semibold text-gray-600 mb-1">Duration (Days)</label><input type="number" id="api-duration" value="30" class="w-full px-4 py-2 border rounded-xl"></div>
-                            <button onclick="generateApiKey()" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl hover:bg-blue-700">Generate Key</button>
-                        </div>
-                        <div id="generated-key-display" class="hidden mt-6 p-4 bg-gray-50 rounded-xl break-all"><p class="text-xs font-bold uppercase text-gray-500">New Key</p><p id="new-key-text" class="font-mono text-blue-600 font-bold"></p></div>
-                    </div>
-                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div class="p-6 border-b border-gray-100"><h3 class="font-bold text-gray-800">Keys Monitor</h3></div>
-                        <table class="w-full text-left text-sm"><thead class="bg-gray-50 text-gray-500 font-semibold border-b"><tr><th class="px-6 py-4">Key</th><th class="px-6 py-4">User</th><th class="px-6 py-4">Expires</th><th class="px-6 py-4">Status</th></tr></thead><tbody id="api-keys-list" class="divide-y divide-gray-100"></tbody></table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin Registration -->
-            <div id="view-admin-registration" class="hidden flex-1 overflow-y-auto p-10 animate-fade-in">
-                <header class="mb-10"><h2 class="text-3xl font-bold text-gray-800">Registration</h2></header>
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                    <table class="w-full text-left text-sm"><thead class="bg-gray-50 text-gray-500 font-semibold border-b"><tr><th class="px-6 py-4">Email</th><th class="px-6 py-4">Key Used</th><th class="px-6 py-4">Date</th></tr></thead><tbody id="registration-list" class="divide-y divide-gray-100"></tbody></table>
-                </div>
-            </div>
+            <!-- Admin Views -->
+            <div id="view-admin-api" class="hidden flex-1 overflow-y-auto p-10 animate-fade-in"><header class="mb-10"><h2 class="text-3xl font-bold text-gray-800">API Management</h2></header><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="bg-white p-6 rounded-2xl shadow-sm border h-fit"><h3 class="font-bold mb-4">Generate Key</h3><div class="space-y-4"><div><label class="block text-sm font-semibold mb-1">Duration (Days)</label><input type="number" id="api-duration" value="30" class="w-full px-4 py-2 border rounded-xl"></div><button onclick="generateApiKey()" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl hover:bg-blue-700">Generate</button></div><div id="generated-key-display" class="hidden mt-6 p-4 bg-gray-50 rounded-xl break-all"><p class="text-xs font-bold uppercase text-gray-500">New Key</p><p id="new-key-text" class="font-mono text-blue-600 font-bold"></p></div></div><div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="p-6 border-b"><h3 class="font-bold text-gray-800">Keys Monitor</h3></div><table class="w-full text-left text-sm"><thead class="bg-gray-50 text-gray-500 font-semibold border-b"><tr><th class="px-6 py-4">Key</th><th class="px-6 py-4">User</th><th class="px-6 py-4">Expires</th><th class="px-6 py-4">Status</th></tr></thead><tbody id="api-keys-list" class="divide-y divide-gray-100"></tbody></table></div></div></div>
+            <div id="view-admin-registration" class="hidden flex-1 overflow-y-auto p-10 animate-fade-in"><header class="mb-10"><h2 class="text-3xl font-bold text-gray-800">Registration</h2></header><div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><table class="w-full text-left text-sm"><thead class="bg-gray-50 text-gray-500 font-semibold border-b"><tr><th class="px-6 py-4">Email</th><th class="px-6 py-4">Key Used</th><th class="px-6 py-4">Date</th></tr></thead><tbody id="registration-list" class="divide-y divide-gray-100"></tbody></table></div></div>
 
             <!-- Settings -->
             <div id="view-settings" class="hidden p-10 animate-fade-in">
                 <header class="mb-8"><h2 class="text-3xl font-bold text-gray-800">Settings</h2></header>
                 <div class="space-y-6 max-w-2xl">
-                    <div class="bg-white rounded-2xl border border-gray-200 p-6">
-                        <h3 class="font-bold text-gray-800 mb-4">Profile</h3>
-                        <div class="space-y-4">
-                            <div><label class="block text-sm font-medium mb-1">Username</label><div class="flex gap-2"><input type="text" id="setting-username" class="px-4 py-2 border rounded-lg w-full"><button onclick="saveProfile()" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm">Update</button></div></div>
-                            <div class="flex justify-between items-center"><span>Anonymous Mode</span><input type="checkbox" id="setting-anon-toggle" onchange="toggleAnonymous()"></div>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-2xl border border-gray-200 p-6">
-                        <h3 class="font-bold text-gray-800 mb-4">Security</h3>
-                        <div class="space-y-4">
-                            <div><label class="block text-sm font-medium mb-1">PIN Code</label><div class="flex gap-2"><input type="password" id="setting-pin" maxlength="6" class="px-4 py-2 border rounded-lg w-48"><button onclick="savePin()" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm">Save</button></div></div>
-                            <div class="flex justify-between items-center"><span>2FA Enabled</span><input type="checkbox" id="setting-2fa-toggle" onchange="toggle2FA()"></div>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-2xl border border-gray-200 p-6 bg-red-50/50"><button onclick="logout()" class="text-red-600 font-bold flex items-center gap-2"><i data-lucide="log-out" class="w-4 h-4"></i> Sign Out</button></div>
+                    <div class="bg-white rounded-2xl border p-6"><h3 class="font-bold text-gray-800 mb-4">Profile</h3><div class="space-y-4"><div><label class="block text-sm font-medium mb-1">Username</label><div class="flex gap-2"><input type="text" id="setting-username" class="px-4 py-2 border rounded-lg w-full"><button onclick="saveProfile()" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm">Update</button></div></div><div class="flex justify-between items-center"><span>Anonymous Mode</span><input type="checkbox" id="setting-anon-toggle" onchange="toggleAnonymous()"></div></div></div>
+                    <div class="bg-white rounded-2xl border p-6"><h3 class="font-bold text-gray-800 mb-4">Security</h3><div class="space-y-4"><div><label class="block text-sm font-medium mb-1">PIN Code</label><div class="flex gap-2"><input type="password" id="setting-pin" maxlength="6" class="px-4 py-2 border rounded-lg w-48"><button onclick="savePin()" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm">Save</button></div></div><div class="flex justify-between items-center"><span>2FA Enabled</span><input type="checkbox" id="setting-2fa-toggle" onchange="toggle2FA()"></div></div></div>
+                    <div class="bg-white rounded-2xl border p-6 bg-red-50/50"><button onclick="logout()" class="text-red-600 font-bold flex items-center gap-2"><i data-lucide="log-out" class="w-4 h-4"></i> Sign Out</button></div>
                 </div>
             </div>
 
-            <!-- Project Detail -->
+            <!-- Project Detail & Collaboration -->
             <div id="view-project-detail" class="hidden h-full flex flex-col animate-fade-in bg-white/30">
-                <div class="bg-white/80 backdrop-blur-md border-b border-gray-200 px-8 py-4 flex-shrink-0 z-10 flex justify-between items-center">
-                    <div class="flex items-center gap-4"><button onclick="closeProjectView()"><i data-lucide="arrow-left" class="w-4 h-4"></i></button><h1 id="detail-project-name" class="text-xl font-bold"></h1></div>
-                </div>
-                <div class="bg-white/50 border-b border-gray-200 px-8 flex gap-8">
-                    <button onclick="switchProjectTab('code')" id="ptab-code" class="py-4 text-sm font-semibold border-b-2 border-orange-500">Code</button>
-                    <button onclick="switchProjectTab('settings')" id="ptab-settings" class="py-4 text-sm font-medium border-b-2 border-transparent">Settings</button>
-                </div>
-                <div id="project-code-panel" class="flex-1 p-8 overflow-y-auto">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div class="bg-gray-50/80 px-4 py-3 flex justify-between items-center border-b"><span>Files</span><div class="flex gap-2"><button onclick="openUploadModal()" class="text-xs bg-white border px-3 py-1.5 rounded-lg">Upload</button><button onclick="openAddFileView()" class="text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg">Add File</button></div></div>
-                        <div id="file-list-container" class="divide-y divide-gray-100"></div>
+                <div class="bg-white/80 backdrop-blur-md border-b px-8 py-4 flex justify-between items-center"><div class="flex items-center gap-4"><button onclick="closeProjectView()"><i data-lucide="arrow-left" class="w-4 h-4"></i></button><h1 id="detail-project-name" class="text-xl font-bold"></h1></div><span id="detail-owner-tag" class="text-xs text-gray-500 font-mono"></span></div>
+                <div class="bg-white/50 border-b px-8 flex gap-8"><button onclick="switchProjectTab('code')" id="ptab-code" class="py-4 text-sm font-semibold border-b-2 border-orange-500">Code</button><button onclick="switchProjectTab('settings')" id="ptab-settings" class="py-4 text-sm font-medium border-b-2 border-transparent">Settings</button></div>
+                <!-- Code Tab -->
+                <div id="project-code-panel" class="flex-1 p-8 overflow-y-auto"><div class="bg-white rounded-xl shadow-sm border overflow-hidden"><div class="bg-gray-50/80 px-4 py-3 flex justify-between items-center border-b"><span>Files</span><div class="flex gap-2"><button onclick="openUploadModal()" class="text-xs bg-white border px-3 py-1.5 rounded-lg">Upload</button><button onclick="openAddFileView()" class="text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg">Add File</button></div></div><div id="file-list-container" class="divide-y divide-gray-100"></div></div></div>
+                <!-- Settings Tab (With Collaboration) -->
+                <div id="project-settings-panel" class="hidden flex-1 p-8 overflow-y-auto">
+                    <div class="max-w-2xl mx-auto space-y-6">
+                        <div class="bg-white rounded-xl border p-6"><h3 class="font-bold mb-4">Rename Project</h3><div class="flex gap-2"><input id="setting-project-name" class="border px-4 py-2 rounded-lg flex-1"><button onclick="saveProjectName()" class="bg-gray-900 text-white px-4 py-2 rounded-lg">Save</button></div></div>
+                        <!-- Collaboration UI -->
+                        <div class="bg-white rounded-xl border p-6">
+                            <h3 class="font-bold mb-4 flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-blue-500"></i> Collaboration</h3>
+                            <p class="text-sm text-gray-500 mb-4">Invite others to view and edit this project.</p>
+                            <div class="flex gap-2 mb-4 relative">
+                                <input id="collab-search" placeholder="Search user by email or username..." class="border px-4 py-2 rounded-lg flex-1">
+                                <button onclick="searchUsers()" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Search</button>
+                                <div id="search-results" class="absolute top-12 left-0 w-full bg-white border rounded-xl shadow-xl z-50 hidden p-2"></div>
+                            </div>
+                            <div id="collab-list" class="space-y-2"></div>
+                        </div>
+                        <button onclick="deleteProject()" id="btn-delete-proj" class="mt-4 bg-red-100 text-red-600 px-4 py-2 rounded-lg w-full">Delete Project</button>
                     </div>
                 </div>
-                <div id="project-settings-panel" class="hidden flex-1 p-8 overflow-y-auto"><div class="bg-white rounded-xl border p-6"><label>Rename</label><div class="flex gap-2 mt-1"><input id="setting-project-name" class="border px-4 py-2 rounded-lg flex-1"><button onclick="saveProjectName()" class="bg-gray-900 text-white px-4 py-2 rounded-lg">Save</button></div></div><button onclick="deleteProject()" class="mt-4 bg-red-100 text-red-600 px-4 py-2 rounded-lg w-full">Delete Project</button></div>
             </div>
 
-            <!-- Editor & Viewer -->
-            <div id="view-editor" class="hidden h-full flex flex-col animate-fade-in bg-white/50">
-                <div class="px-8 py-4 border-b bg-white/80 flex justify-between"><button onclick="cancelEdit()"><i data-lucide="x" class="w-5 h-5"></i></button><div class="flex gap-2 bg-gray-100 rounded-lg px-3 py-1"><input id="editor-filename" class="bg-transparent outline-none"></div><button onclick="commitFile()" class="bg-green-600 text-white px-6 py-2 rounded-lg">Commit</button></div>
-                <div class="flex-1 p-4 relative bg-gray-900"><div id="editor-container" class="w-full h-full"></div></div>
-            </div>
-            <div id="view-file-display" class="hidden h-full flex flex-col animate-fade-in bg-gray-50">
-                <div class="bg-white border-b px-6 py-4 flex justify-between items-center"><div class="flex gap-3"><h2 id="display-filename" class="font-bold"></h2></div><div class="flex gap-2"><div id="md-toggle-container" class="hidden bg-gray-100 rounded p-1 flex gap-1"><button onclick="toggleMdView('preview')" id="btn-md-preview" class="px-2 text-xs rounded bg-white">Preview</button><button onclick="toggleMdView('code')" id="btn-md-code" class="px-2 text-xs text-gray-500">Code</button></div><button onclick="downloadCurrentFile()"><i data-lucide="download" class="w-4 h-4"></i></button><button onclick="editCurrentFile()"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="openRawView()"><i data-lucide="code" class="w-4 h-4"></i></button></div></div>
-                <div class="flex-1 p-6 overflow-hidden bg-gray-900 relative"><div id="readonly-editor" class="w-full h-full"></div><div id="markdown-preview" class="hidden absolute inset-6 bg-white overflow-y-auto p-8 markdown-body"></div></div>
-            </div>
+            <!-- Editor / Viewers -->
+            <div id="view-editor" class="hidden h-full flex flex-col animate-fade-in bg-white/50"><div class="px-8 py-4 border-b bg-white/80 flex justify-between"><button onclick="cancelEdit()"><i data-lucide="x" class="w-5 h-5"></i></button><div class="flex gap-2 bg-gray-100 rounded-lg px-3 py-1"><input id="editor-filename" class="bg-transparent outline-none"></div><button onclick="commitFile()" class="bg-green-600 text-white px-6 py-2 rounded-lg">Commit</button></div><div class="flex-1 p-4 relative bg-gray-900"><div id="editor-container" class="w-full h-full"></div></div></div>
+            <div id="view-file-display" class="hidden h-full flex flex-col animate-fade-in bg-gray-50"><div class="bg-white border-b px-6 py-4 flex justify-between items-center"><div class="flex gap-3"><h2 id="display-filename" class="font-bold"></h2></div><div class="flex gap-2"><div id="md-toggle-container" class="hidden bg-gray-100 rounded p-1 flex gap-1"><button onclick="toggleMdView('preview')" id="btn-md-preview" class="px-2 text-xs rounded bg-white">Preview</button><button onclick="toggleMdView('code')" id="btn-md-code" class="px-2 text-xs text-gray-500">Code</button></div><button onclick="downloadCurrentFile()"><i data-lucide="download" class="w-4 h-4"></i></button><button onclick="editCurrentFile()"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="openRawView()"><i data-lucide="code" class="w-4 h-4"></i></button></div></div><div class="flex-1 p-6 overflow-hidden bg-gray-900 relative"><div id="readonly-editor" class="w-full h-full"></div><div id="markdown-preview" class="hidden absolute inset-6 bg-white overflow-y-auto p-8 markdown-body"></div></div></div>
         </main>
     </div>
 
@@ -193,193 +151,98 @@
 
     <script>
         const ALLOWED_EMAILS = ["bluerblx160@gmail.com", "zian.mabry@portsk12.com"];
-        let currentUser = null, projects = [], apiKeys = [], userSettings = {}, activeProjectId = null, activeFileIndex = -1, editingFileIndex = -1, pendingUploadContent = null, aceEditor, readOnlyEditor;
-        let pendingAuthEmail = ""; // Fix for refresh issue
+        let currentUser = null, projects = [], apiKeys = [], userSettings = {}, activeProjectId = null, activeFileIndex = -1, editingFileIndex = -1, pendingAuthEmail = "", pendingUploadContent = null, aceEditor, readOnlyEditor;
 
         window.onload = async () => {
             initEditors(); lucide.createIcons();
             const savedUser = localStorage.getItem('aethel_session_user');
-            
-            // Restore pending auth if page refreshed during flow
             pendingAuthEmail = sessionStorage.getItem('pendingAuthEmail') || "";
-            if(pendingAuthEmail && !savedUser) {
-                document.getElementById('login-container').classList.add('hidden');
-                document.getElementById('apikey-container').classList.remove('hidden');
-            }
-
-            if(savedUser) { 
-                const u = JSON.parse(savedUser);
-                await fetchUserData(u.email);
-                currentUser = u;
-                if(u.authType === 'admin') await fetchAdminData();
-                completeLogin(u.role);
-            }
+            if(pendingAuthEmail && !savedUser) { document.getElementById('login-container').classList.add('hidden'); document.getElementById('apikey-container').classList.remove('hidden'); }
+            if(savedUser) { const u = JSON.parse(savedUser); await fetchUserData(u.email); currentUser = u; if(u.authType === 'admin') await fetchAdminData(); completeLogin(u.role); }
         };
 
-        function initEditors() {
-            aceEditor = ace.edit("editor-container"); aceEditor.setTheme("ace/theme/monokai"); aceEditor.session.setMode("ace/mode/javascript");
-            readOnlyEditor = ace.edit("readonly-editor"); readOnlyEditor.setTheme("ace/theme/monokai"); readOnlyEditor.session.setMode("ace/mode/javascript"); readOnlyEditor.setReadOnly(true);
-        }
+        function initEditors() { aceEditor=ace.edit("editor-container"); aceEditor.setTheme("ace/theme/monokai"); aceEditor.session.setMode("ace/mode/javascript"); readOnlyEditor=ace.edit("readonly-editor"); readOnlyEditor.setTheme("ace/theme/monokai"); readOnlyEditor.session.setMode("ace/mode/javascript"); readOnlyEditor.setReadOnly(true); }
 
-        async function fetchUserData(email) {
-            try {
-                const res = await fetch(`/api/user/data?email=${email}`);
-                const data = await res.json();
-                projects = data.projects || [];
-                userSettings = { [email]: data.settings || {} };
-            } catch(e) { console.error(e); }
-        }
+        // --- API ---
+        async function fetchUserData(email) { const res=await fetch(`/api/user/data?email=${email}`); const data=await res.json(); projects=data.projects||[]; userSettings={[email]:data.settings||{}}; }
+        async function syncUserData() { if(!currentUser)return; await fetch('/api/user/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: currentUser.email, projects: projects, settings: userSettings[currentUser.email] }) }); }
+        async function fetchAdminData() { const kRes=await fetch('/api/admin/keys'); apiKeys=await kRes.json(); const rRes=await fetch('/api/admin/registrations'); renderRegistrationList(await rRes.json()); }
 
-        async function syncUserData() {
-            if(!currentUser) return;
-            await fetch('/api/user/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: currentUser.email, projects: projects, settings: userSettings[currentUser.email] }) });
-        }
+        // --- AUTH & LOGIN ---
+        async function handleEmailSubmit(e) { e.preventDefault(); const email=document.getElementById('email').value.trim().toLowerCase(); if(ALLOWED_EMAILS.includes(email)){currentUser={email,role:"Admin Access",authType:'admin'};await fetchUserData(email);await fetchAdminData();attemptLogin(email,"Admin Access",'admin');}else{pendingAuthEmail=email;sessionStorage.setItem('pendingAuthEmail',email);document.getElementById('login-container').classList.add('hidden');document.getElementById('apikey-container').classList.remove('hidden');} }
+        async function handleApiKeySubmit(e) { e.preventDefault(); const key=document.getElementById('apikey').value.trim(); if(!pendingAuthEmail)return alert("Error"); const res=await fetch('/api/auth/key-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,email:pendingAuthEmail})}); const data=await res.json(); if(data.success){currentUser={email:pendingAuthEmail,role:data.role,authType:'key'};await fetchUserData(currentUser.email);attemptLogin(currentUser.email,data.role,'key');}else{document.getElementById('api-error').innerText=data.error;document.getElementById('api-error').classList.remove('hidden');} }
+        function attemptLogin(email,r,t) { const s=userSettings[email]||{}; if(s.twoFactor){trigger2FAFlow(email);}else{finalizeLogin();} }
+        function finalizeLogin() { localStorage.setItem('aethel_session_user', JSON.stringify(currentUser)); sessionStorage.removeItem('pendingAuthEmail'); completeLogin(currentUser.role); }
+        function completeLogin(role) { document.getElementById('auth-wrapper').classList.add('hidden'); document.getElementById('dashboard-container').classList.remove('hidden'); const s=userSettings[currentUser.email]||{}; if(s.isAnonymous){document.getElementById('display-name').innerText="Anonymous";document.getElementById('user-avatar').innerText="?";}else{document.getElementById('display-name').innerText=s.username||currentUser.email;document.getElementById('user-avatar').innerText=currentUser.email[0].toUpperCase();} document.getElementById('access-level').innerText=role; document.getElementById('setting-pin').value=s.pin||''; document.getElementById('setting-2fa-toggle').checked=s.twoFactor||false; document.getElementById('setting-username').value=s.username||''; document.getElementById('setting-anon-toggle').checked=s.isAnonymous||false; if(role==='Admin Access')document.getElementById('admin-tabs').classList.remove('hidden'); renderProjects(); }
+        function logout(){localStorage.removeItem('aethel_session_user');location.reload();} function backToEmail(){document.getElementById('apikey-container').classList.add('hidden');document.getElementById('login-container').classList.remove('hidden');}
+        
+        // --- 2FA ---
+        function trigger2FAFlow(e){document.getElementById('login-container').classList.add('hidden');document.getElementById('apikey-container').classList.add('hidden');document.getElementById('2fa-email-modal').classList.remove('hidden');document.getElementById('2fa-target-email').innerText=e;}
+        function openPinEntry(){document.getElementById('2fa-email-modal').classList.add('hidden');document.getElementById('2fa-pin-modal').classList.remove('hidden');}
+        function verifyPinAndLogin(){if(document.getElementById('pin-input').value===userSettings[currentUser.email].pin){document.getElementById('2fa-pin-modal').classList.add('hidden');finalizeLogin();}else{document.getElementById('pin-error').classList.remove('hidden');}}
 
-        async function fetchAdminData() {
-            const kRes = await fetch('/api/admin/keys'); apiKeys = await kRes.json();
-            const rRes = await fetch('/api/admin/registrations'); const regs = await rRes.json();
-            renderRegistrationList(regs);
-        }
+        // --- ADMIN ---
+        async function generateApiKey(){const res=await fetch('/api/admin/generate-key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({duration:document.getElementById('api-duration').value})});const data=await res.json();apiKeys=data.keys;document.getElementById('new-key-text').innerText=data.key;document.getElementById('generated-key-display').classList.remove('hidden');renderApiKeys();}
+        function renderApiKeys(){const t=document.getElementById('api-keys-list');t.innerHTML='';apiKeys.forEach(k=>{t.innerHTML+=`<tr class="hover:bg-gray-50"><td class="px-6 py-4 font-mono">${k.key.substring(0,10)}...</td><td class="px-6 py-4">${k.usedBy}</td><td class="px-6 py-4">${new Date(k.expiresAt).toLocaleDateString()}</td><td class="px-6 py-4">Active</td></tr>`;});}
+        function renderRegistrationList(regs){const t=document.getElementById('registration-list');t.innerHTML='';regs.forEach(r=>{t.innerHTML+=`<tr class="hover:bg-gray-50"><td class="px-6 py-4">${r.email}</td><td class="px-6 py-4 font-mono text-xs">${r.key}</td><td class="px-6 py-4">${new Date(r.usedDate).toLocaleDateString()}</td></tr>`;});}
 
-        async function handleEmailSubmit(e) {
-            e.preventDefault(); const email = document.getElementById('email').value.trim().toLowerCase();
-            if(ALLOWED_EMAILS.includes(email)) {
-                currentUser = { email, role: "Admin Access", authType: 'admin' };
-                await fetchUserData(email); await fetchAdminData(); attemptLogin(email, "Admin Access", 'admin');
-            } else {
-                pendingAuthEmail = email; 
-                sessionStorage.setItem('pendingAuthEmail', email); // Save state
-                document.getElementById('login-container').classList.add('hidden'); 
-                document.getElementById('apikey-container').classList.remove('hidden');
-            }
-        }
+        // --- SETTINGS ---
+        function saveProfile(){userSettings[currentUser.email]=userSettings[currentUser.email]||{};userSettings[currentUser.email].username=document.getElementById('setting-username').value;syncUserData().then(()=>{completeLogin(currentUser.role);alert('Updated');});}
+        function toggleAnonymous(){userSettings[currentUser.email]=userSettings[currentUser.email]||{};userSettings[currentUser.email].isAnonymous=document.getElementById('setting-anon-toggle').checked;syncUserData().then(()=>completeLogin(currentUser.role));}
+        function savePin(){userSettings[currentUser.email]=userSettings[currentUser.email]||{};userSettings[currentUser.email].pin=document.getElementById('setting-pin').value;syncUserData().then(()=>alert('Saved'));}
+        function toggle2FA(){userSettings[currentUser.email]=userSettings[currentUser.email]||{};userSettings[currentUser.email].twoFactor=document.getElementById('setting-2fa-toggle').checked;syncUserData();}
 
-        async function handleApiKeySubmit(e) {
-            e.preventDefault(); const key = document.getElementById('apikey').value.trim();
-            if (!pendingAuthEmail) return alert("Please enter email first");
-            
-            const res = await fetch('/api/auth/key-login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ key, email: pendingAuthEmail }) });
-            const data = await res.json();
-            if(data.success) {
-                currentUser = { email: pendingAuthEmail, role: data.role, authType: 'key' };
-                await fetchUserData(currentUser.email);
-                attemptLogin(currentUser.email, data.role, 'key');
-            } else {
-                document.getElementById('api-error').innerText = data.error; document.getElementById('api-error').classList.remove('hidden');
-            }
-        }
-
-        function attemptLogin(email, role, authType) {
-            const s = userSettings[email] || {};
-            if(s.twoFactor) { trigger2FAFlow(email); } else { finalizeLogin(); }
-        }
-
-        function finalizeLogin() {
-            localStorage.setItem('aethel_session_user', JSON.stringify(currentUser));
-            sessionStorage.removeItem('pendingAuthEmail');
-            completeLogin(currentUser.role);
-        }
-
-        function trigger2FAFlow(email) {
-            document.getElementById('login-container').classList.add('hidden'); document.getElementById('apikey-container').classList.add('hidden');
-            document.getElementById('2fa-email-modal').classList.remove('hidden'); document.getElementById('2fa-target-email').innerText = email;
-        }
-        function openPinEntry() { document.getElementById('2fa-email-modal').classList.add('hidden'); document.getElementById('2fa-pin-modal').classList.remove('hidden'); }
-        function verifyPinAndLogin() {
-            if(document.getElementById('pin-input').value === userSettings[currentUser.email].pin) { document.getElementById('2fa-pin-modal').classList.add('hidden'); finalizeLogin(); }
-            else document.getElementById('pin-error').classList.remove('hidden');
-        }
-
-        function completeLogin(role) {
-            document.getElementById('auth-wrapper').classList.add('hidden'); document.getElementById('dashboard-container').classList.remove('hidden');
-            const s = userSettings[currentUser.email] || {};
-            if(s.isAnonymous) {
-                document.getElementById('display-name').innerText = "Anonymous"; document.getElementById('user-avatar').innerText = "?";
-            } else {
-                document.getElementById('display-name').innerText = s.username || currentUser.email; document.getElementById('user-avatar').innerText = currentUser.email[0].toUpperCase();
-            }
-            document.getElementById('access-level').innerText = role;
-            document.getElementById('setting-pin').value = s.pin || '';
-            document.getElementById('setting-2fa-toggle').checked = s.twoFactor || false;
-            document.getElementById('setting-username').value = s.username || '';
-            document.getElementById('setting-anon-toggle').checked = s.isAnonymous || false;
-            if(role === 'Admin Access') document.getElementById('admin-tabs').classList.remove('hidden');
-            renderProjects();
-        }
-
-        function logout() { localStorage.removeItem('aethel_session_user'); location.reload(); }
-        function backToEmail() { document.getElementById('apikey-container').classList.add('hidden'); document.getElementById('login-container').classList.remove('hidden'); }
-
-        async function generateApiKey() {
-            const res = await fetch('/api/admin/generate-key', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ duration: document.getElementById('api-duration').value }) });
-            const data = await res.json();
-            apiKeys = data.keys; document.getElementById('new-key-text').innerText = data.key; document.getElementById('generated-key-display').classList.remove('hidden'); renderApiKeys();
-        }
-        function renderApiKeys() {
-            const t = document.getElementById('api-keys-list'); t.innerHTML = '';
-            apiKeys.forEach(k => { t.innerHTML += `<tr class="hover:bg-gray-50"><td class="px-6 py-4 font-mono">${k.key.substring(0,10)}...</td><td class="px-6 py-4">${k.usedBy}</td><td class="px-6 py-4">${new Date(k.expiresAt).toLocaleDateString()}</td><td class="px-6 py-4">Active</td></tr>`; });
-        }
-        function renderRegistrationList(regs) {
-            const t = document.getElementById('registration-list'); t.innerHTML = '';
-            regs.forEach(r => { t.innerHTML += `<tr class="hover:bg-gray-50"><td class="px-6 py-4">${r.email}</td><td class="px-6 py-4 font-mono text-xs">${r.key}</td><td class="px-6 py-4">${new Date(r.usedDate).toLocaleDateString()}</td></tr>`; });
-        }
-
-        function saveProfile() { userSettings[currentUser.email] = userSettings[currentUser.email] || {}; userSettings[currentUser.email].username = document.getElementById('setting-username').value; syncUserData().then(() => { completeLogin(currentUser.role); alert('Profile updated'); }); }
-        function toggleAnonymous() { userSettings[currentUser.email] = userSettings[currentUser.email] || {}; userSettings[currentUser.email].isAnonymous = document.getElementById('setting-anon-toggle').checked; syncUserData().then(() => completeLogin(currentUser.role)); }
-        function savePin() { userSettings[currentUser.email] = userSettings[currentUser.email] || {}; userSettings[currentUser.email].pin = document.getElementById('setting-pin').value; syncUserData().then(() => alert('PIN Saved')); }
-        function toggle2FA() { userSettings[currentUser.email] = userSettings[currentUser.email] || {}; userSettings[currentUser.email].twoFactor = document.getElementById('setting-2fa-toggle').checked; syncUserData(); }
-
-        function switchTab(t) {
-            ['view-projects','view-admin-api','view-admin-registration','view-settings','view-project-detail','view-editor','view-file-display'].forEach(id => document.getElementById(id).classList.add('hidden'));
-            if(t === 'projects') document.getElementById('view-projects').classList.remove('hidden');
-            if(t === 'api') { document.getElementById('view-admin-api').classList.remove('hidden'); renderApiKeys(); }
-            if(t === 'registration') document.getElementById('view-admin-registration').classList.remove('hidden');
-            if(t === 'global-settings') document.getElementById('view-settings').classList.remove('hidden');
-        }
-        function openCreateModal(){document.getElementById('modal-create-project').classList.remove('hidden');}
-        function closeCreateModal(){document.getElementById('modal-create-project').classList.add('hidden');}
-        function handleCreateProject(e){ e.preventDefault(); projects.push({id:Date.now(), name:document.getElementById('new-project-name').value, lastUpdated: new Date().toLocaleDateString(), files:[]}); syncUserData(); closeCreateModal(); renderProjects(); }
-        function renderProjects(){ 
-            const g = document.getElementById('projects-grid'); g.innerHTML = '';
-            if(projects.length===0) { document.getElementById('empty-state').classList.remove('hidden'); document.getElementById('empty-state').classList.add('flex'); }
-            else { document.getElementById('empty-state').classList.add('hidden'); document.getElementById('empty-state').classList.remove('flex');
-            projects.forEach(p => { g.innerHTML += `<div onclick="openProjectDetail(${p.id})" class="bg-white p-6 rounded-2xl shadow-sm border cursor-pointer hover:shadow-lg transition"><h3 class="font-bold">${p.name}</h3><p class="text-sm text-gray-500">${p.files.length} files</p></div>`; }); }
-        }
-        function openProjectDetail(id){ activeProjectId = id; const p = projects.find(x=>x.id===id); document.getElementById('detail-project-name').innerText=p.name; renderFiles(); switchTab('none'); document.getElementById('view-project-detail').classList.remove('hidden'); switchProjectTab('code'); }
-        function closeProjectView(){ switchTab('projects'); }
-        function switchProjectTab(t){ 
-            document.getElementById('project-code-panel').classList.add('hidden'); document.getElementById('project-settings-panel').classList.add('hidden');
-            document.getElementById('ptab-code').classList.replace('border-orange-500','border-transparent'); document.getElementById('ptab-settings').classList.replace('border-orange-500','border-transparent');
+        // --- NAVIGATION & PROJECTS ---
+        function switchTab(t){['view-projects','view-admin-api','view-admin-registration','view-settings','view-project-detail','view-editor','view-file-display'].forEach(id=>document.getElementById(id).classList.add('hidden')); if(t==='projects')document.getElementById('view-projects').classList.remove('hidden');if(t==='api'){document.getElementById('view-admin-api').classList.remove('hidden');renderApiKeys();}if(t==='registration')document.getElementById('view-admin-registration').classList.remove('hidden');if(t==='global-settings')document.getElementById('view-settings').classList.remove('hidden');}
+        function openCreateModal(){document.getElementById('modal-create-project').classList.remove('hidden');} function closeCreateModal(){document.getElementById('modal-create-project').classList.add('hidden');}
+        function handleCreateProject(e){e.preventDefault();projects.push({id:Date.now(),owner:currentUser.email,name:document.getElementById('new-project-name').value,lastUpdated:new Date().toLocaleDateString(),files:[],collaborators:[]});syncUserData();closeCreateModal();renderProjects();}
+        function renderProjects(){const g=document.getElementById('projects-grid');g.innerHTML='';if(projects.length===0){document.getElementById('empty-state').classList.remove('hidden');document.getElementById('empty-state').classList.add('flex');}else{document.getElementById('empty-state').classList.add('hidden');document.getElementById('empty-state').classList.remove('flex');projects.forEach(p=>{const isShared=p.owner&&p.owner!==currentUser.email;const tag=isShared?'<span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">Shared</span>':'';g.innerHTML+=`<div onclick="openProjectDetail(${p.id})" class="bg-white p-6 rounded-2xl shadow-sm border cursor-pointer hover:shadow-lg transition"><div class="flex justify-between"><h3 class="font-bold">${p.name}</h3>${tag}</div><p class="text-sm text-gray-500">${p.files.length} files</p></div>`;});}}
+        
+        function openProjectDetail(id){activeProjectId=id;const p=projects.find(x=>x.id===id);document.getElementById('detail-project-name').innerText=p.name;document.getElementById('detail-owner-tag').innerText=p.owner&&p.owner!==currentUser.email?`Owner: ${p.owner}`:'';renderFiles();switchTab('none');document.getElementById('view-project-detail').classList.remove('hidden');switchProjectTab('code'); renderCollaborators();}
+        function closeProjectView(){switchTab('projects');}
+        function switchProjectTab(t){
+            document.getElementById('project-code-panel').classList.add('hidden');document.getElementById('project-settings-panel').classList.add('hidden');
+            document.getElementById('ptab-code').classList.replace('border-orange-500','border-transparent');document.getElementById('ptab-settings').classList.replace('border-orange-500','border-transparent');
             if(t==='code'){document.getElementById('project-code-panel').classList.remove('hidden');document.getElementById('ptab-code').classList.replace('border-transparent','border-orange-500');}
-            if(t==='settings'){document.getElementById('project-settings-panel').classList.remove('hidden');document.getElementById('ptab-settings').classList.replace('border-transparent','border-orange-500');document.getElementById('setting-project-name').value=projects.find(x=>x.id===activeProjectId).name;}
+            if(t==='settings'){document.getElementById('project-settings-panel').classList.remove('hidden');document.getElementById('ptab-settings').classList.replace('border-transparent','border-orange-500');document.getElementById('setting-project-name').value=projects.find(x=>x.id===activeProjectId).name;renderCollaborators();}
         }
-        function saveProjectName() { const p = projects.find(x=>x.id===activeProjectId); p.name=document.getElementById('setting-project-name').value; syncUserData(); document.getElementById('detail-project-name').innerText=p.name; alert('Saved'); }
-        function deleteProject() { projects = projects.filter(x=>x.id!==activeProjectId); syncUserData(); switchTab('projects'); }
-        function renderFiles(){
-            const list = document.getElementById('file-list-container'); list.innerHTML = '';
-            projects.find(x=>x.id===activeProjectId).files.forEach((f,i) => {
-                list.innerHTML += `<div onclick="openFileViewer(${i})" class="flex justify-between p-4 cursor-pointer hover:bg-gray-50"><div class="flex gap-2"><i data-lucide="file-code" class="w-4 h-4"></i><span>${f.name}</span></div><span>${f.date||''}</span></div>`;
-            }); lucide.createIcons();
+        function saveProjectName(){const p=projects.find(x=>x.id===activeProjectId);if(p.owner&&p.owner!==currentUser.email)return alert("Only the owner can rename."); p.name=document.getElementById('setting-project-name').value;syncUserData();document.getElementById('detail-project-name').innerText=p.name;alert('Saved');}
+        function deleteProject(){const p=projects.find(x=>x.id===activeProjectId);if(p.owner&&p.owner!==currentUser.email)return alert("Only the owner can delete."); if(confirm("Delete?")){projects=projects.filter(x=>x.id!==activeProjectId);syncUserData();switchTab('projects');}}
+
+        // --- COLLABORATION ---
+        async function searchUsers(){
+            const q=document.getElementById('collab-search').value.trim(); if(q.length<2)return;
+            const res=await fetch(`/api/user/search?q=${q}`); const users=await res.json();
+            const div=document.getElementById('search-results'); div.innerHTML=''; div.classList.remove('hidden');
+            if(users.length===0) div.innerHTML='<div class="text-sm text-gray-500 p-2">No users found</div>';
+            users.forEach(u=>{ if(u.email===currentUser.email)return; div.innerHTML+=`<div onclick="addCollaborator('${u.email}')" class="p-2 hover:bg-gray-100 cursor-pointer text-sm"><b>${u.username}</b> (${u.email})</div>`;});
         }
-        function openFileViewer(i){ activeFileIndex=i; const f=projects.find(x=>x.id===activeProjectId).files[i]; document.getElementById('display-filename').innerText=f.name; readOnlyEditor.setValue(f.content); readOnlyEditor.clearSelection(); 
-            if(f.name.endsWith('.md')){document.getElementById('md-toggle-container').classList.remove('hidden'); document.getElementById('markdown-preview').innerHTML=marked.parse(f.content); toggleMdView('preview');} else {document.getElementById('md-toggle-container').classList.add('hidden'); toggleMdView('code');}
-            document.getElementById('view-project-detail').classList.add('hidden'); document.getElementById('view-file-display').classList.remove('hidden');
+        function addCollaborator(email){
+            const p=projects.find(x=>x.id===activeProjectId); if(p.owner&&p.owner!==currentUser.email)return alert("Only owner can add people.");
+            if(!p.collaborators)p.collaborators=[];
+            if(!p.collaborators.includes(email)){ p.collaborators.push(email); syncUserData(); renderCollaborators(); document.getElementById('search-results').classList.add('hidden'); document.getElementById('collab-search').value=''; alert(`Added ${email}`); }
         }
-        function toggleMdView(m) { const e=document.getElementById('readonly-editor'),p=document.getElementById('markdown-preview'); if(m==='preview'){e.style.display='none';p.classList.remove('hidden');}else{e.style.display='block';p.classList.add('hidden');} }
-        function openAddFileView(){ editingFileIndex=-1; document.getElementById('view-project-detail').classList.add('hidden'); document.getElementById('view-editor').classList.remove('hidden'); document.getElementById('editor-filename').value=''; aceEditor.setValue(''); }
-        function cancelEdit(){ document.getElementById('view-editor').classList.add('hidden'); document.getElementById('view-project-detail').classList.remove('hidden'); }
-        function commitFile(){ 
-            const n=document.getElementById('editor-filename').value, c=aceEditor.getValue(), p=projects.find(x=>x.id===activeProjectId);
-            if(editingFileIndex>-1) { p.files[editingFileIndex].content=c; } else { p.files.push({name:n, content:c, date:'Just now', type:'Code'}); }
-            syncUserData(); renderFiles(); cancelEdit();
+        function renderCollaborators(){
+            const p=projects.find(x=>x.id===activeProjectId); const l=document.getElementById('collab-list'); l.innerHTML='';
+            if(p.collaborators && p.collaborators.length > 0) {
+                p.collaborators.forEach(c => { l.innerHTML += `<div class="flex justify-between items-center text-sm p-2 bg-gray-50 rounded"><span>${c}</span><span class="text-xs bg-green-100 text-green-600 px-2 rounded">Can Edit</span></div>`; });
+            } else { l.innerHTML = '<p class="text-sm text-gray-400">No collaborators yet.</p>'; }
         }
-        function editCurrentFile(){ editingFileIndex=activeFileIndex; const f=projects.find(x=>x.id===activeProjectId).files[activeFileIndex]; document.getElementById('view-file-display').classList.add('hidden'); document.getElementById('view-editor').classList.remove('hidden'); document.getElementById('editor-filename').value=f.name; aceEditor.setValue(f.content); }
-        function downloadCurrentFile(){ const f=projects.find(x=>x.id===activeProjectId).files[activeFileIndex]; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([f.content])); a.download=f.name; a.click(); }
-        function openRawView(){ const f=projects.find(x=>x.id===activeProjectId).files[activeFileIndex]; const w=window.open('','_blank'); w.document.write(`<pre style="background:#0e0e0e;color:white;padding:20px">${f.content.replace(/</g,'&lt;')}</pre>`); }
-        function openUploadModal(){document.getElementById('modal-upload-file').classList.remove('hidden');}
-        function closeUploadModal(){document.getElementById('modal-upload-file').classList.add('hidden');}
-        function handleFileSelect(e){const f=e.target.files[0]; const r=new FileReader(); r.onload=v=>{pendingUploadContent=v.target.result;document.getElementById('btn-confirm-upload').disabled=false;document.getElementById('upload-preview').classList.remove('hidden');document.getElementById('upload-filename').innerText=f.name;document.getElementById('btn-confirm-upload').classList.replace('bg-gray-300','bg-blue-600');}; r.readAsText(f);}
-        function confirmUpload(){closeUploadModal(); editingFileIndex=-1; document.getElementById('view-project-detail').classList.add('hidden'); document.getElementById('view-editor').classList.remove('hidden'); document.getElementById('editor-filename').value=document.getElementById('upload-filename').innerText; aceEditor.setValue(pendingUploadContent); }
+
+        // --- FILES & EDITING ---
+        function renderFiles(){const list=document.getElementById('file-list-container');list.innerHTML='';projects.find(x=>x.id===activeProjectId).files.forEach((f,i)=>{list.innerHTML+=`<div onclick="openFileViewer(${i})" class="flex justify-between p-4 cursor-pointer hover:bg-gray-50"><div class="flex gap-2"><i data-lucide="file-code" class="w-4 h-4"></i><span>${f.name}</span></div><span>${f.date||''}</span></div>`;});lucide.createIcons();}
+        function openFileViewer(i){activeFileIndex=i;const f=projects.find(x=>x.id===activeProjectId).files[i];document.getElementById('display-filename').innerText=f.name;readOnlyEditor.setValue(f.content);readOnlyEditor.clearSelection();if(f.name.endsWith('.md')){document.getElementById('md-toggle-container').classList.remove('hidden');document.getElementById('markdown-preview').innerHTML=marked.parse(f.content);toggleMdView('preview');}else{document.getElementById('md-toggle-container').classList.add('hidden');toggleMdView('code');}document.getElementById('view-project-detail').classList.add('hidden');document.getElementById('view-file-display').classList.remove('hidden');}
+        function toggleMdView(m){const e=document.getElementById('readonly-editor'),p=document.getElementById('markdown-preview');if(m==='preview'){e.style.display='none';p.classList.remove('hidden');}else{e.style.display='block';p.classList.add('hidden');}}
+        function openAddFileView(){editingFileIndex=-1;document.getElementById('view-project-detail').classList.add('hidden');document.getElementById('view-editor').classList.remove('hidden');document.getElementById('editor-filename').value='';aceEditor.setValue('');}
+        function cancelEdit(){document.getElementById('view-editor').classList.add('hidden');document.getElementById('view-project-detail').classList.remove('hidden');}
+        function commitFile(){const n=document.getElementById('editor-filename').value,c=aceEditor.getValue(),p=projects.find(x=>x.id===activeProjectId);if(editingFileIndex>-1){p.files[editingFileIndex].content=c;}else{p.files.push({name:n,content:c,date:'Just now',type:'Code'});}syncUserData();renderFiles();cancelEdit();}
+        function editCurrentFile(){editingFileIndex=activeFileIndex;const f=projects.find(x=>x.id===activeProjectId).files[activeFileIndex];document.getElementById('view-file-display').classList.add('hidden');document.getElementById('view-editor').classList.remove('hidden');document.getElementById('editor-filename').value=f.name;aceEditor.setValue(f.content);}
+        function downloadCurrentFile(){const f=projects.find(x=>x.id===activeProjectId).files[activeFileIndex],a=document.createElement('a');a.href=URL.createObjectURL(new Blob([f.content]));a.download=f.name;a.click();}
+        function openRawView(){const f=projects.find(x=>x.id===activeProjectId).files[activeFileIndex],w=window.open('','_blank');w.document.write(`<pre style="background:#0e0e0e;color:white;padding:20px">${f.content.replace(/</g,'&lt;')}</pre>`);}
+        
+        function openUploadModal(){document.getElementById('modal-upload-file').classList.remove('hidden');} function closeUploadModal(){document.getElementById('modal-upload-file').classList.add('hidden');}
+        function handleFileSelect(e){const f=e.target.files[0],r=new FileReader();r.onload=v=>{pendingUploadContent=v.target.result;document.getElementById('btn-confirm-upload').disabled=false;document.getElementById('upload-preview').classList.remove('hidden');document.getElementById('upload-filename').innerText=f.name;document.getElementById('btn-confirm-upload').classList.replace('bg-gray-300','bg-blue-600');};r.readAsText(f);}
+        function confirmUpload(){closeUploadModal();editingFileIndex=-1;document.getElementById('view-project-detail').classList.add('hidden');document.getElementById('view-editor').classList.remove('hidden');document.getElementById('editor-filename').value=document.getElementById('upload-filename').innerText;aceEditor.setValue(pendingUploadContent);}
     </script>
 </body>
 </html>
