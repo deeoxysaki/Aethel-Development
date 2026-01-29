@@ -183,11 +183,59 @@ app.post('/api/user/data', (req, res) => {
     res.json({ success: true });
 });
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+app.get('/raw/:project/:file', (req, res) => {
+    const pName = decodeURIComponent(req.params.project);
+    const fName = decodeURIComponent(req.params.file);
+    
+    let foundFile = null;
+    let foundProj = null;
+
+    const allEmails = Object.keys(db.projects);
+    for (const email of allEmails) {
+        const projs = db.projects[email];
+        const match = projs.find(p => p.name === pName);
+        if (match) {
+            const file = match.files.find(f => f.name === fName);
+            if (file) {
+                foundFile = file;
+                foundProj = match;
+                break;
+            }
+        }
+    }
+
+    if (foundFile) {
+        res.setHeader('Content-Type', 'text/html');
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>${fName} (Raw)</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body { background-color: #ffffff; color: #000000; font-family: monospace; margin: 0; padding: 20px; white-space: pre-wrap; word-wrap: break-word; }
+                    ::selection { background: transparent; }
+                </style>
+                <script>
+                    document.addEventListener('contextmenu', event => event.preventDefault());
+                    document.onkeydown = function(e) {
+                        if(e.keyCode == 123) return false;
+                        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+                        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+                        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+                        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+                    }
+                </script>
+            </head>
+            <body>${foundFile.content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</body>
+            </html>
+        `);
+    } else {
+        res.status(404).send('404: File Not Found');
+    }
 });
 
-app.get('/raw/*', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
