@@ -1,0 +1,15 @@
+{
+  "name": "aethel-locker",
+  "version": "1.0.0",
+  "description": "Aethel Locker Project Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=14.x"
+  }
+}
