@@ -39,6 +39,8 @@ function generateId() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
+// --- ADMIN ROUTES ---
+
 app.post('/api/admin/generate-key', (req, res) => {
     const { duration } = req.body;
     const prefix = "sk_live_";
@@ -92,7 +94,6 @@ app.post('/api/admin/extend-key', (req, res) => {
 
 app.get('/api/admin/keys', (req, res) => res.json(db.apiKeys));
 
-// UPDATED: Include PIN in response for Admins
 app.get('/api/admin/registrations', (req, res) => {
     const enrichedRegs = db.registrations.map(r => ({
         ...r,
@@ -100,6 +101,8 @@ app.get('/api/admin/registrations', (req, res) => {
     }));
     res.json(enrichedRegs);
 });
+
+// --- AUTH & DATA ---
 
 app.post('/api/auth/key-login', (req, res) => {
     const { key, email } = req.body;
@@ -211,6 +214,7 @@ app.post('/api/user/data', (req, res) => {
     res.json({ success: true });
 });
 
+// RAW ROUTE: Pure Text for Roblox
 app.get('/raw/:pid/:fid', (req, res) => {
     const pid = req.params.pid;
     const fid = req.params.fid;
