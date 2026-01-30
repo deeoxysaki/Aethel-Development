@@ -52,6 +52,7 @@
         .toggle-checkbox:checked { background: #2563eb; }
         .toggle-checkbox:checked::after { transform: translateX(1.5rem); }
 
+        /* GitHub Style Markdown (White) */
         .markdown-body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif; font-size: 16px; line-height: 1.5; color: #24292f; background-color: #ffffff; padding: 2rem; border-radius: 0 0 6px 6px; }
         .markdown-body h1, .markdown-body h2 { border-bottom: 1px solid #d0d7de; padding-bottom: .3em; margin-top: 24px; margin-bottom: 16px; font-weight: 600; line-height: 1.25; }
         .markdown-body h1 { font-size: 2em; } 
@@ -94,7 +95,7 @@
         <div id="2fa-pin-modal" class="glass-panel p-8 rounded-2xl shadow-2xl bg-white/80 hidden relative text-center">
             <div class="mb-4"><i data-lucide="shield-check" class="w-8 h-8 text-green-600 mx-auto"></i></div>
             <h2 class="text-lg font-bold text-gray-800 mb-4">Enter PIN Code</h2>
-            <div class="flex justify-center gap-2 mb-6"><input type="password" id="pin-input" maxlength="6" class="text-center text-2xl font-mono tracking-widest w-40 px-2 py-2 border-b-2 border-gray-300 focus:border-blue-500 outline-none bg-transparent" placeholder="••••"></div>
+            <div class="flex justify-center gap-2 mb-6"><input type="password" id="pin-input" maxlength="8" class="text-center text-2xl font-mono tracking-widest w-40 px-2 py-2 border-b-2 border-gray-300 focus:border-blue-500 outline-none bg-transparent" placeholder="••••"></div>
             <button onclick="verifyPinAndLogin()" class="w-full bg-green-600 text-white font-semibold py-2 rounded-lg hover:bg-green-700 transition">Confirm</button>
             <p id="pin-error" class="text-red-500 text-xs mt-3 hidden">Incorrect PIN</p>
         </div>
@@ -172,8 +173,8 @@
                 </div>
             </div>
 
-            <div id="view-editor" class="hidden h-full flex flex-col animate-fade-in bg-white/50"><div class="px-8 py-4 border-b bg-white/80 flex justify-between"><button onclick="cancelEdit()"><i data-lucide="x" class="w-5 h-5"></i></button><div class="flex gap-2 bg-gray-100 rounded-lg px-3 py-1"><input id="editor-filename" class="bg-transparent outline-none"></div><button onclick="commitFile()" class="bg-green-600 text-white px-6 py-2 rounded-lg">Commit</button></div><div class="flex-1 p-4 relative bg-[#282c34]"><div id="editor-container" class="w-full h-full"></div></div></div>
-            <div id="view-file-display" class="hidden h-full flex flex-col animate-fade-in bg-gray-50"><div class="bg-white border-b px-6 py-4 flex justify-between items-center"><div class="flex gap-3"><h2 id="display-filename" class="font-bold text-gray-800"></h2></div><div class="flex gap-2"><div id="md-toggle-container" class="hidden bg-gray-100 rounded p-1 flex gap-1"><button onclick="toggleMdView('preview')" id="btn-md-preview" class="px-2 text-xs rounded bg-white">Preview</button><button onclick="toggleMdView('code')" id="btn-md-code" class="px-2 text-xs text-gray-500">Code</button></div><button onclick="openHistory()" class="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1"><i data-lucide="history" class="w-4 h-4"></i> History</button><button onclick="deleteCurrentFile()" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete</button><button onclick="downloadCurrentFile()"><i data-lucide="download" class="w-4 h-4"></i></button><button onclick="editCurrentFile()"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="openRawView()"><i data-lucide="code" class="w-4 h-4"></i></button></div></div><div class="flex-1 p-6 overflow-hidden bg-[#282c34] relative"><div id="readonly-editor" class="w-full h-full"></div><div id="markdown-preview" class="hidden absolute inset-6 bg-white overflow-y-auto p-8 markdown-body"></div></div></div>
+            <div id="view-editor" class="hidden h-full flex flex-col animate-fade-in bg-white/50"><div class="px-8 py-4 border-b bg-white/80 flex justify-between"><button onclick="cancelEdit()"><i data-lucide="x" class="w-5 h-5"></i></button><div class="flex gap-2 bg-gray-100 rounded-lg px-3 py-1"><input id="editor-filename" class="bg-transparent outline-none"></div><button onclick="commitFile()" class="bg-green-600 text-white px-6 py-2 rounded-lg">Commit</button></div><div class="flex-1 p-4 relative bg-[#ffffff]"><div id="editor-container" class="w-full h-full"></div></div></div>
+            <div id="view-file-display" class="hidden h-full flex flex-col animate-fade-in bg-gray-50"><div class="bg-white border-b px-6 py-4 flex justify-between items-center"><div class="flex gap-3"><h2 id="display-filename" class="font-bold text-gray-800"></h2></div><div class="flex gap-2"><div id="md-toggle-container" class="hidden bg-gray-100 rounded p-1 flex gap-1"><button onclick="toggleMdView('preview')" id="btn-md-preview" class="px-2 text-xs rounded bg-white">Preview</button><button onclick="toggleMdView('code')" id="btn-md-code" class="px-2 text-xs text-gray-500">Code</button></div><button onclick="openHistory()" class="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1"><i data-lucide="history" class="w-4 h-4"></i> History</button><button onclick="deleteCurrentFile()" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete</button><button onclick="downloadCurrentFile()"><i data-lucide="download" class="w-4 h-4"></i></button><button onclick="editCurrentFile()"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="openRawView()"><i data-lucide="code" class="w-4 h-4"></i></button></div></div><div class="flex-1 p-6 overflow-hidden bg-[#ffffff] relative"><div id="readonly-editor" class="w-full h-full"></div><div id="markdown-preview" class="hidden absolute inset-6 bg-white overflow-y-auto p-8 markdown-body"></div></div></div>
         </main>
     </div>
 
@@ -202,9 +203,9 @@
     <script>
         const ALLOWED_EMAILS = ["bluerblx160@gmail.com", "zian.mabry@portsk12.com"];
         const ADMIN_PIN = "15208512";
-        let currentUser = null, projects = [], apiKeys = [], userSettings = {}, activeProjectId = null, activeFileIndex = -1, editingFileIndex = -1, pendingAuthEmail = "", pendingUploadContent = null, aceEditor, readOnlyEditor;
+        let currentUser = null, projects = [], apiKeys = [], userSettings = {}, activeProjectId = null, activeFileId = null, editingFileIndex = -1, pendingAuthEmail = "", pendingUploadContent = null, aceEditor, readOnlyEditor;
         let isEditing = false;
-        let tempPin = ""; // For PIN creation flow
+        let tempPin = ""; 
 
         window.onload = async () => {
             initEditors(); lucide.createIcons();
@@ -221,20 +222,10 @@
             }
         };
 
-        // --- SAFE FETCH WRAPPER ---
         async function safeFetch(url, options = {}) {
             const isPreview = window.location.protocol === 'blob:' || window.location.protocol === 'file:';
-            const fullUrl = isPreview && url.startsWith('/') 
-                ? 'https://aethel-development.onrender.com' + url 
-                : url;
-
-            try {
-                const response = await fetch(fullUrl, options);
-                return response;
-            } catch (error) {
-                console.warn(`Fetch failed for ${url}:`, error);
-                throw error; 
-            }
+            const fullUrl = isPreview && url.startsWith('/') ? 'https://aethel-development.onrender.com' + url : url;
+            try { return await fetch(fullUrl, options); } catch (error) { console.warn(`Fetch failed for ${url}:`, error); throw error; }
         }
 
         async function pollData() {
@@ -255,139 +246,34 @@
         }
 
         function initEditors() { 
-            aceEditor=ace.edit("editor-container"); aceEditor.setTheme("ace/theme/one_dark"); aceEditor.session.setMode("ace/mode/javascript"); 
-            readOnlyEditor=ace.edit("readonly-editor"); readOnlyEditor.setTheme("ace/theme/one_dark"); readOnlyEditor.session.setMode("ace/mode/javascript"); readOnlyEditor.setReadOnly(true); 
+            aceEditor=ace.edit("editor-container"); aceEditor.setTheme("ace/theme/github"); aceEditor.session.setMode("ace/mode/javascript"); 
+            readOnlyEditor=ace.edit("readonly-editor"); readOnlyEditor.setTheme("ace/theme/github"); readOnlyEditor.session.setMode("ace/mode/javascript"); readOnlyEditor.setReadOnly(true); 
         }
 
-        async function fetchUserData(email) { 
-            try {
-                const res = await safeFetch(`/api/user/data?email=${email}`);
-                if (!res.ok) throw new Error("Failed to fetch user data");
-                const data = await res.json();
-                projects = data.projects || []; 
-                userSettings = {[email]: data.settings || {}}; 
-            } catch(e) {
-                console.error("fetchUserData error:", e);
-                projects = [];
-                userSettings = {};
-            }
-        }
+        async function fetchUserData(email) { try { const res = await safeFetch(`/api/user/data?email=${email}`); if (!res.ok) throw new Error("Failed"); const data = await res.json(); projects = data.projects || []; userSettings = {[email]: data.settings || {}}; } catch(e) { projects = []; userSettings = {}; } }
+        async function syncUserData() { if(!currentUser) return; try { await safeFetch('/api/user/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: currentUser.email, projects: projects, settings: userSettings[currentUser.email] }) }); } catch(e) { console.error("Sync failed", e); } }
+        async function fetchAdminData() { try { const kRes = await safeFetch('/api/admin/keys'); apiKeys = await kRes.json(); const rRes = await safeFetch('/api/admin/registrations'); renderRegistrationList(await rRes.json()); } catch(e) { } }
 
-        async function syncUserData() { 
-            if(!currentUser) return; 
-            try {
-                await safeFetch('/api/user/data', { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ email: currentUser.email, projects: projects, settings: userSettings[currentUser.email] }) 
-                }); 
-            } catch(e) { console.error("Sync failed", e); }
-        }
-
-        async function fetchAdminData() { 
-            try {
-                const kRes = await safeFetch('/api/admin/keys'); 
-                apiKeys = await kRes.json(); 
-                const rRes = await safeFetch('/api/admin/registrations'); 
-                renderRegistrationList(await rRes.json()); 
-            } catch(e) { console.error("Admin fetch failed", e); }
-        }
-
-        async function handleEmailSubmit(e) { 
-            e.preventDefault(); 
-            const email = document.getElementById('email').value.trim().toLowerCase(); 
-            if(ALLOWED_EMAILS.includes(email)){
-                currentUser={email,role:"Admin Access",authType:'admin'};
-                await fetchUserData(email);
-                await fetchAdminData();
-                attemptLogin(email,"Admin Access",'admin');
-            } else {
-                pendingAuthEmail=email;
-                sessionStorage.setItem('pendingAuthEmail',email);
-                document.getElementById('login-container').classList.add('hidden');
-                document.getElementById('apikey-container').classList.remove('hidden');
-            } 
-        }
-
-        async function handleApiKeySubmit(e) { 
-            e.preventDefault(); 
-            const key=document.getElementById('apikey').value.trim(); 
-            if(!pendingAuthEmail) return alert("Error: Email missing"); 
-            
-            try {
-                const res = await safeFetch('/api/auth/key-login',{
-                    method:'POST',
-                    headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({key,email:pendingAuthEmail})
-                }); 
-                const data = await res.json(); 
-                if(data.success){
-                    currentUser={email:pendingAuthEmail,role:data.role,authType:'key'};
-                    await fetchUserData(currentUser.email);
-                    attemptLogin(currentUser.email,data.role,'key');
-                } else {
-                    document.getElementById('api-error').innerText=data.error;
-                    document.getElementById('api-error').classList.remove('hidden');
-                } 
-            } catch(e) {
-                document.getElementById('api-error').innerText="Connection failed (Preview Mode?)";
-                document.getElementById('api-error').classList.remove('hidden');
-            }
-        }
+        async function handleEmailSubmit(e) { e.preventDefault(); const email = document.getElementById('email').value.trim().toLowerCase(); if(ALLOWED_EMAILS.includes(email)){ currentUser={email,role:"Admin Access",authType:'admin'}; await fetchUserData(email); await fetchAdminData(); attemptLogin(email,"Admin Access",'admin'); } else { pendingAuthEmail=email; sessionStorage.setItem('pendingAuthEmail',email); document.getElementById('login-container').classList.add('hidden'); document.getElementById('apikey-container').classList.remove('hidden'); } }
+        async function handleApiKeySubmit(e) { e.preventDefault(); const key=document.getElementById('apikey').value.trim(); if(!pendingAuthEmail) return alert("Error: Email missing"); try { const res = await safeFetch('/api/auth/key-login',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key,email:pendingAuthEmail}) }); const data = await res.json(); if(data.success){ currentUser={email:pendingAuthEmail,role:data.role,authType:'key'}; await fetchUserData(currentUser.email); attemptLogin(currentUser.email,data.role,'key'); } else { document.getElementById('api-error').innerText=data.error; document.getElementById('api-error').classList.remove('hidden'); } } catch(e) { document.getElementById('api-error').innerText="Connection failed"; document.getElementById('api-error').classList.remove('hidden'); } }
         
-        function attemptLogin(email,r,t) { 
-            const s=userSettings[email]||{}; 
-            if(!s.pin) {
-                document.getElementById('apikey-container').classList.add('hidden');
-                document.getElementById('login-container').classList.add('hidden');
-                startPinFlow();
-                return;
-            }
-            if(s.twoFactor){trigger2FAFlow(email);}else{finalizeLogin();} 
-        }
-        
+        function attemptLogin(email,r,t) { const s=userSettings[email]||{}; if(!s.pin) { document.getElementById('apikey-container').classList.add('hidden'); document.getElementById('login-container').classList.add('hidden'); startPinFlow(); return; } if(s.twoFactor){trigger2FAFlow(email);}else{finalizeLogin();} }
         function finalizeLogin() { localStorage.setItem('aethel_session_user', JSON.stringify(currentUser)); sessionStorage.removeItem('pendingAuthEmail'); completeLogin(currentUser.role); setInterval(pollData, 3000); }
         function completeLogin(role) { 
             document.getElementById('auth-wrapper').classList.add('hidden'); document.getElementById('dashboard-container').classList.remove('hidden'); const s=userSettings[currentUser.email]||{}; 
-            if(s.isAnonymous){document.getElementById('display-name').innerText="Anonymous";document.getElementById('user-avatar').innerText="?";}else{document.getElementById('display-name').innerText=s.username||currentUser.email;document.getElementById('user-avatar').innerText=currentUser.email[0].toUpperCase();} 
-            document.getElementById('access-level').innerText=role; 
-            
+            if(s.isAnonymous){document.getElementById('display-name').innerText="Anonymous";document.getElementById('user-avatar').innerText="?";}else{document.getElementById('display-name').innerText=s.username||currentUser.email;document.getElementById('user-avatar').innerText=currentUser.email[0].toUpperCase();} document.getElementById('access-level').innerText=role; 
             if (s.twoFactor === undefined) { s.twoFactor = true; userSettings[currentUser.email].twoFactor = true; syncUserData(); }
-            
             document.getElementById('setting-2fa-toggle').checked=s.twoFactor; document.getElementById('setting-username').value=s.username||''; document.getElementById('setting-anon-toggle').checked=s.isAnonymous||false; if(role==='Admin Access')document.getElementById('admin-tabs').classList.remove('hidden'); renderProjects(); 
         }
         function logout() { localStorage.removeItem('aethel_session_user'); location.reload(); } function backToEmail(){document.getElementById('apikey-container').classList.add('hidden');document.getElementById('login-container').classList.remove('hidden');}
         
         function trigger2FAFlow(e){document.getElementById('login-container').classList.add('hidden');document.getElementById('apikey-container').classList.add('hidden');document.getElementById('2fa-email-modal').classList.remove('hidden');document.getElementById('2fa-target-email').innerText=e;}
         function openPinEntry() { document.getElementById('2fa-email-modal').classList.add('hidden'); document.getElementById('2fa-pin-modal').classList.remove('hidden'); }
-        function verifyPinAndLogin() { 
-            const input = document.getElementById('pin-input').value;
-            const correctPin = (currentUser.authType === 'admin') ? ADMIN_PIN : userSettings[currentUser.email].pin;
-            if(input === correctPin){document.getElementById('2fa-pin-modal').classList.add('hidden');finalizeLogin();}else{document.getElementById('pin-error').classList.remove('hidden');} 
-        }
+        function verifyPinAndLogin() { const input = document.getElementById('pin-input').value; const correctPin = (currentUser.authType === 'admin') ? ADMIN_PIN : userSettings[currentUser.email].pin; if(input === correctPin){document.getElementById('2fa-pin-modal').classList.add('hidden');finalizeLogin();}else{document.getElementById('pin-error').classList.remove('hidden');} }
 
-        // --- PIN CREATION FLOW ---
         function startPinFlow() { document.getElementById('input-create-pin').value=''; document.getElementById('input-confirm-pin').value=''; document.getElementById('modal-create-pin').classList.remove('hidden'); }
-        function handleCreatePin() {
-            const val = document.getElementById('input-create-pin').value;
-            if(val.length < 4) return alert("PIN must be at least 4 characters");
-            tempPin = val;
-            document.getElementById('modal-create-pin').classList.add('hidden');
-            document.getElementById('modal-confirm-pin').classList.remove('hidden');
-        }
-        function handleConfirmPin() {
-            const val = document.getElementById('input-confirm-pin').value;
-            if(val !== tempPin) return alert("PINs do not match");
-            userSettings[currentUser.email] = userSettings[currentUser.email] || {};
-            userSettings[currentUser.email].pin = val;
-            syncUserData().then(() => {
-                document.getElementById('modal-confirm-pin').classList.add('hidden');
-                alert("PIN Saved Successfully");
-                if (document.getElementById('dashboard-container').classList.contains('hidden')) {
-                    finalizeLogin();
-                }
-            });
-        }
+        function handleCreatePin() { const val = document.getElementById('input-create-pin').value; if(val.length < 4) return alert("PIN must be at least 4 characters"); tempPin = val; document.getElementById('modal-create-pin').classList.add('hidden'); document.getElementById('modal-confirm-pin').classList.remove('hidden'); }
+        function handleConfirmPin() { const val = document.getElementById('input-confirm-pin').value; if(val !== tempPin) return alert("PINs do not match"); userSettings[currentUser.email] = userSettings[currentUser.email] || {}; userSettings[currentUser.email].pin = val; syncUserData().then(() => { document.getElementById('modal-confirm-pin').classList.add('hidden'); alert("PIN Saved Successfully"); if (document.getElementById('dashboard-container').classList.contains('hidden')) { finalizeLogin(); } }); }
 
         async function generateApiKey(){const res=await safeFetch('/api/admin/generate-key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({duration:document.getElementById('api-duration').value})});const data=await res.json();apiKeys=data.keys;document.getElementById('new-key-text').innerText=data.key;document.getElementById('generated-key-display').classList.remove('hidden');renderApiKeys();}
         async function expireKey(k) { if(confirm('Revoke key?')) { await safeFetch('/api/admin/expire-key', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ key: k }) }); fetchAdminData(); } }
@@ -401,35 +287,17 @@
 
         function switchTab(t){
             ['view-projects','view-admin-api','view-admin-registration','view-settings','view-project-detail','view-editor','view-file-display'].forEach(id=>document.getElementById(id).classList.add('hidden')); 
-            
             const activeClass = ['bg-blue-50/50', 'text-blue-700', 'border-blue-100', 'shadow-sm'];
             const inactiveClass = ['text-gray-500', 'hover:bg-white/50', 'border-transparent'];
-            const mapping = {
-                'projects': 'tab-btn-projects',
-                'api': 'tab-btn-api',
-                'registration': 'tab-btn-registration',
-                'global-settings': 'tab-btn-settings'
-            };
-
-            // Reset all to inactive
-            Object.values(mapping).forEach(id => {
-                const btn = document.getElementById(id);
-                if(btn) {
-                    btn.classList.remove(...activeClass);
-                    btn.classList.add(...inactiveClass);
-                }
+            ['projects', 'api', 'registration', 'global-settings'].forEach(k => {
+                const btn = document.getElementById(`tab-btn-${k}`);
+                if(btn) { btn.classList.remove(...activeClass); btn.classList.add(...inactiveClass); }
             });
-
-            // Activate target
-            const targetId = mapping[t];
-            if(targetId) {
-                const btn = document.getElementById(targetId);
-                if(btn) {
-                    btn.classList.remove(...inactiveClass);
-                    btn.classList.add(...activeClass);
-                }
+            const targetId = `tab-btn-${t}`;
+            if(document.getElementById(targetId)) {
+                document.getElementById(targetId).classList.remove(...inactiveClass);
+                document.getElementById(targetId).classList.add(...activeClass);
             }
-
             if(t==='projects') document.getElementById('view-projects').classList.remove('hidden');
             if(t==='api'){document.getElementById('view-admin-api').classList.remove('hidden');renderApiKeys();}
             if(t==='registration')document.getElementById('view-admin-registration').classList.remove('hidden');
@@ -477,7 +345,26 @@
             });
             lucide.createIcons();
         }
-        function openFileViewer(i){activeFileIndex=i;const f=projects.find(x=>x.id===activeProjectId).files[i];document.getElementById('display-filename').innerText=f.name;readOnlyEditor.setValue(f.content);readOnlyEditor.clearSelection();if(f.name.endsWith('.md')){document.getElementById('md-toggle-container').classList.remove('hidden');document.getElementById('markdown-preview').innerHTML=marked.parse(f.content);hljs.highlightAll();document.querySelectorAll('#markdown-preview pre code').forEach(el=>{const btn=document.createElement('button');btn.className='copy-btn';btn.innerText='Copy';btn.onclick=()=>copyText(btn,el.innerText);el.parentElement.appendChild(btn)});toggleMdView('preview');}else{document.getElementById('md-toggle-container').classList.add('hidden');toggleMdView('code');}document.getElementById('view-project-detail').classList.add('hidden');document.getElementById('view-file-display').classList.remove('hidden');}
+        function openFileViewer(i){
+            activeFileIndex=i;
+            const f=projects.find(x=>x.id===activeProjectId).files[i];
+            activeFileId = f.publicId; 
+            document.getElementById('display-filename').innerText=f.name;
+            readOnlyEditor.setValue(f.content);
+            readOnlyEditor.clearSelection();
+            if(f.name.endsWith('.md')){
+                document.getElementById('md-toggle-container').classList.remove('hidden');
+                document.getElementById('markdown-preview').innerHTML=marked.parse(f.content);
+                hljs.highlightAll();
+                document.querySelectorAll('#markdown-preview pre code').forEach(el=>{const btn=document.createElement('button');btn.className='copy-btn';btn.innerText='Copy';btn.onclick=()=>copyText(btn,el.innerText);el.parentElement.appendChild(btn)});
+                toggleMdView('preview');
+            }else{
+                document.getElementById('md-toggle-container').classList.add('hidden');
+                toggleMdView('code');
+            }
+            document.getElementById('view-project-detail').classList.add('hidden');
+            document.getElementById('view-file-display').classList.remove('hidden');
+        }
         function toggleMdView(m){const e=document.getElementById('readonly-editor'),p=document.getElementById('markdown-preview');if(m==='preview'){e.style.display='none';p.classList.remove('hidden');}else{e.style.display='block';p.classList.add('hidden');}}
         function copyText(b,t) { const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);b.innerText="Copied!";setTimeout(()=>b.innerText="Copy",2000); }
         function openAddFileView(){editingFileIndex=-1;document.getElementById('modal-add-file').classList.remove('hidden');}
@@ -500,11 +387,14 @@
         function editCurrentFile(){editingFileIndex=activeFileIndex;const f=projects.find(x=>x.id===activeProjectId).files[activeFileIndex];document.getElementById('view-file-display').classList.add('hidden');document.getElementById('view-editor').classList.remove('hidden');document.getElementById('editor-filename').value=f.name;aceEditor.setValue(f.content);isEditing=true;}
         function downloadCurrentFile(){const f=projects.find(x=>x.id===activeProjectId).files[activeFileIndex],a=document.createElement('a');a.href=URL.createObjectURL(new Blob([f.content]));a.download=f.name;a.click();}
         function deleteCurrentFile(){if(confirm("Delete file?")){const p=projects.find(x=>x.id===activeProjectId);p.files.splice(activeFileIndex,1);syncUserData();renderFiles();checkReadme(p);document.getElementById('view-file-display').classList.add('hidden');document.getElementById('view-project-detail').classList.remove('hidden');}}
+        
         function openRawView(){
-            const p=projects.find(x=>x.id===activeProjectId);
-            const f=p.files[activeFileIndex];
-            const url = `/raw/${p.publicId}/${f.publicId}`;
-            window.open(url, '_blank');
+            const p = projects.find(x=>x.id===activeProjectId);
+            const f = p.files.find(f => f.publicId === activeFileId);
+            if (p && f) {
+                const url = `https://aethel-development.onrender.com/raw/${p.publicId}/${f.publicId}`;
+                window.open(url, '_blank');
+            }
         }
         
         function openHistory(){
