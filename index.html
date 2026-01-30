@@ -96,7 +96,7 @@
         <div id="2fa-pin-modal" class="glass-panel p-8 rounded-2xl shadow-2xl bg-white/80 hidden relative text-center">
             <div class="mb-4"><i data-lucide="shield-check" class="w-8 h-8 text-green-600 mx-auto"></i></div>
             <h2 class="text-lg font-bold text-gray-800 mb-4">Enter PIN Code</h2>
-            <div class="flex justify-center gap-2 mb-6"><input type="password" id="pin-input" maxlength="6" class="text-center text-2xl font-mono tracking-widest w-40 px-2 py-2 border-b-2 border-gray-300 focus:border-blue-500 outline-none bg-transparent" placeholder="••••"></div>
+            <div class="flex justify-center gap-2 mb-6"><input type="password" id="pin-input" class="text-center text-2xl font-mono tracking-widest w-40 px-2 py-2 border-b-2 border-gray-300 focus:border-blue-500 outline-none bg-transparent" placeholder="••••"></div>
             <button onclick="verifyPinAndLogin()" class="w-full bg-green-600 text-white font-semibold py-2 rounded-lg hover:bg-green-700 transition">Confirm</button>
             <p id="pin-error" class="text-red-500 text-xs mt-3 hidden">Incorrect PIN</p>
         </div>
@@ -130,7 +130,7 @@
                 <header class="mb-8"><h2 class="text-3xl font-bold text-gray-800">Settings</h2></header>
                 <div class="space-y-6 max-w-2xl">
                     <div class="bg-white rounded-2xl border p-6"><h3 class="font-bold text-gray-800 mb-4">Profile</h3><div class="space-y-4"><div><label class="block text-sm font-medium mb-1 text-gray-500">Username</label><div class="flex gap-2"><input type="text" id="setting-username" class="px-4 py-2 border rounded-lg w-full"><button onclick="saveProfile()" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm">Update</button></div></div><div class="flex justify-between items-center"><span class="text-gray-800">Anonymous Mode</span><input type="checkbox" id="setting-anon-toggle" class="toggle-checkbox" onchange="toggleAnonymous()"></div></div></div>
-                    <div class="bg-white rounded-2xl border p-6"><h3 class="font-bold text-gray-800 mb-4">Security</h3><div class="space-y-4"><div><label class="block text-sm font-medium mb-1 text-gray-500">PIN Code</label><div class="flex gap-2"><input type="password" id="setting-pin" maxlength="6" class="px-4 py-2 border rounded-lg w-48"><button onclick="savePin()" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm">Save</button></div></div><div class="flex justify-between items-center"><span class="text-gray-800">2FA Enabled</span><input type="checkbox" id="setting-2fa-toggle" class="toggle-checkbox" onchange="toggle2FA()"></div></div></div>
+                    <div class="bg-white rounded-2xl border p-6"><h3 class="font-bold text-gray-800 mb-4">Security</h3><div class="space-y-4"><div><label class="block text-sm font-medium mb-1 text-gray-500">PIN Code</label><div class="flex gap-2"><input type="password" id="setting-pin" maxlength="8" class="px-4 py-2 border rounded-lg w-48"><button onclick="savePin()" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm">Save</button></div></div><div class="flex justify-between items-center"><span class="text-gray-800">2FA Enabled</span><input type="checkbox" id="setting-2fa-toggle" class="toggle-checkbox" onchange="toggle2FA()"></div></div></div>
                     <div class="bg-white rounded-2xl border p-6 bg-red-50/50"><button onclick="logout()" class="text-red-600 font-bold flex items-center gap-2"><i data-lucide="log-out" class="w-4 h-4"></i> Sign Out</button></div>
                 </div>
             </div>
@@ -174,15 +174,19 @@
             </div>
 
             <div id="view-editor" class="hidden h-full flex flex-col animate-fade-in bg-white/50"><div class="px-8 py-4 border-b bg-white/80 flex justify-between"><button onclick="cancelEdit()"><i data-lucide="x" class="w-5 h-5"></i></button><div class="flex gap-2 bg-gray-100 rounded-lg px-3 py-1"><input id="editor-filename" class="bg-transparent outline-none"></div><button onclick="commitFile()" class="bg-green-600 text-white px-6 py-2 rounded-lg">Commit</button></div><div class="flex-1 p-4 relative bg-[#282c34]"><div id="editor-container" class="w-full h-full"></div></div></div>
-            <div id="view-file-display" class="hidden h-full flex flex-col animate-fade-in bg-gray-50"><div class="bg-white border-b px-6 py-4 flex justify-between items-center"><div class="flex gap-3"><h2 id="display-filename" class="font-bold text-gray-800"></h2></div><div class="flex gap-2"><div id="md-toggle-container" class="hidden bg-gray-100 rounded p-1 flex gap-1"><button onclick="toggleMdView('preview')" id="btn-md-preview" class="px-2 text-xs rounded bg-white">Preview</button><button onclick="toggleMdView('code')" id="btn-md-code" class="px-2 text-xs text-gray-500">Code</button></div><button onclick="deleteCurrentFile()" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete</button><button onclick="downloadCurrentFile()"><i data-lucide="download" class="w-4 h-4"></i></button><button onclick="editCurrentFile()"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="openRawView()"><i data-lucide="code" class="w-4 h-4"></i></button></div></div><div class="flex-1 p-6 overflow-hidden bg-[#282c34] relative"><div id="readonly-editor" class="w-full h-full"></div><div id="markdown-preview" class="hidden absolute inset-6 bg-white overflow-y-auto p-8 markdown-body"></div></div></div>
+            <div id="view-file-display" class="hidden h-full flex flex-col animate-fade-in bg-gray-50"><div class="bg-white border-b px-6 py-4 flex justify-between items-center"><div class="flex gap-3"><h2 id="display-filename" class="font-bold text-gray-800"></h2></div><div class="flex gap-2"><div id="md-toggle-container" class="hidden bg-gray-100 rounded p-1 flex gap-1"><button onclick="toggleMdView('preview')" id="btn-md-preview" class="px-2 text-xs rounded bg-white">Preview</button><button onclick="toggleMdView('code')" id="btn-md-code" class="px-2 text-xs text-gray-500">Code</button></div><button onclick="openHistory()" class="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1"><i data-lucide="history" class="w-4 h-4"></i> History</button><button onclick="deleteCurrentFile()" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete</button><button onclick="downloadCurrentFile()"><i data-lucide="download" class="w-4 h-4"></i></button><button onclick="editCurrentFile()"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="openRawView()"><i data-lucide="code" class="w-4 h-4"></i></button></div></div><div class="flex-1 p-6 overflow-hidden bg-[#282c34] relative"><div id="readonly-editor" class="w-full h-full"></div><div id="markdown-preview" class="hidden absolute inset-6 bg-white overflow-y-auto p-8 markdown-body"></div></div></div>
         </main>
     </div>
 
+    <!-- Modals -->
     <div id="modal-create-project" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"><div class="bg-white rounded-xl p-6 w-full max-w-md"><h3 class="font-bold mb-4">New Project</h3><input id="new-project-name" class="w-full border px-4 py-2 rounded-lg mb-4" placeholder="Name"><div class="flex justify-end gap-2"><button onclick="closeCreateModal()">Cancel</button><button onclick="handleCreateProject(event)" class="bg-green-600 text-white px-4 py-2 rounded-lg">Create</button></div></div></div>
     <div id="modal-upload-file" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"><div class="bg-white rounded-xl p-6 w-full max-w-md"><h3 class="font-bold mb-4">Upload</h3><div onclick="document.getElementById('file-input').click()" class="border-2 border-dashed p-8 text-center cursor-pointer"><input type="file" id="file-input" class="hidden" onchange="handleFileSelect(event)"><p>Select File</p></div><div id="upload-preview" class="hidden mt-4 p-2 bg-blue-50 text-sm"><span id="upload-filename"></span></div><button onclick="confirmUpload()" id="btn-confirm-upload" disabled class="w-full mt-4 bg-gray-300 text-white px-4 py-2 rounded-lg">Upload</button><button onclick="closeUploadModal()" class="w-full mt-2 text-gray-500">Cancel</button></div></div>
+    <div id="modal-add-file" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"><div class="bg-white rounded-xl p-6 w-full max-w-md"><h3 class="font-bold mb-2">Create File</h3><p class="text-xs text-gray-500 mb-4">Tip: Use <code>folder/name.ext</code> to create folders.</p><div class="flex justify-end gap-2"><button onclick="document.getElementById('modal-add-file').classList.add('hidden')">Cancel</button><button onclick="confirmAddFile()" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Start Coding</button></div></div></div>
+    <div id="modal-history" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"><div class="bg-white rounded-xl p-6 w-full max-w-lg h-[80vh] flex flex-col"><h3 class="font-bold mb-4">Version History</h3><div id="history-list" class="flex-1 overflow-y-auto space-y-2 border-t border-b py-2 mb-4"></div><button onclick="document.getElementById('modal-history').classList.add('hidden')" class="w-full py-2 bg-gray-100 rounded-lg">Close</button></div></div>
 
     <script>
         const ALLOWED_EMAILS = ["bluerblx160@gmail.com", "zian.mabry@portsk12.com"];
+        const ADMIN_PIN = "15208512";
         let currentUser = null, projects = [], apiKeys = [], userSettings = {}, activeProjectId = null, activeFileIndex = -1, editingFileIndex = -1, pendingAuthEmail = "", pendingUploadContent = null, aceEditor, readOnlyEditor;
         let isEditing = false;
 
@@ -231,18 +235,26 @@
         async function handleApiKeySubmit(e) { e.preventDefault(); const key=document.getElementById('apikey').value.trim(); if(!pendingAuthEmail)return alert("Error"); const res=await fetch('/api/auth/key-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,email:pendingAuthEmail})}); const data=await res.json(); if(data.success){currentUser={email:pendingAuthEmail,role:data.role,authType:'key'};await fetchUserData(currentUser.email);attemptLogin(currentUser.email,data.role,'key');}else{document.getElementById('api-error').innerText=data.error;document.getElementById('api-error').classList.remove('hidden');} }
         function attemptLogin(email,r,t) { const s=userSettings[email]||{}; if(s.twoFactor){trigger2FAFlow(email);}else{finalizeLogin();} }
         function finalizeLogin() { localStorage.setItem('aethel_session_user', JSON.stringify(currentUser)); sessionStorage.removeItem('pendingAuthEmail'); completeLogin(currentUser.role); setInterval(pollData, 3000); }
-        function completeLogin(role) { document.getElementById('auth-wrapper').classList.add('hidden'); document.getElementById('dashboard-container').classList.remove('hidden'); const s=userSettings[currentUser.email]||{}; if(s.isAnonymous){document.getElementById('display-name').innerText="Anonymous";document.getElementById('user-avatar').innerText="?";}else{document.getElementById('display-name').innerText=s.username||currentUser.email;document.getElementById('user-avatar').innerText=currentUser.email[0].toUpperCase();} document.getElementById('access-level').innerText=role; 
+        function completeLogin(role) { 
+            document.getElementById('auth-wrapper').classList.add('hidden'); document.getElementById('dashboard-container').classList.remove('hidden'); const s=userSettings[currentUser.email]||{}; 
+            if(s.isAnonymous){document.getElementById('display-name').innerText="Anonymous";document.getElementById('user-avatar').innerText="?";}else{document.getElementById('display-name').innerText=s.username||currentUser.email;document.getElementById('user-avatar').innerText=currentUser.email[0].toUpperCase();} 
+            document.getElementById('access-level').innerText=role; 
             
             // Auto-Enable Security Defaults for New Users
             if (s.twoFactor === undefined) { s.twoFactor = true; userSettings[currentUser.email].twoFactor = true; syncUserData(); }
             if (!s.pin) { s.pin = "0000"; userSettings[currentUser.email].pin = "0000"; syncUserData(); alert("Security Alert: Your default PIN is 0000. Please change it in Settings."); }
 
-            document.getElementById('setting-pin').value=s.pin; document.getElementById('setting-2fa-toggle').checked=s.twoFactor; document.getElementById('setting-username').value=s.username||''; document.getElementById('setting-anon-toggle').checked=s.isAnonymous||false; if(role==='Admin Access')document.getElementById('admin-tabs').classList.remove('hidden'); renderProjects(); }
+            document.getElementById('setting-pin').value=s.pin; document.getElementById('setting-2fa-toggle').checked=s.twoFactor; document.getElementById('setting-username').value=s.username||''; document.getElementById('setting-anon-toggle').checked=s.isAnonymous||false; if(role==='Admin Access')document.getElementById('admin-tabs').classList.remove('hidden'); renderProjects(); 
+        }
         function logout() { localStorage.removeItem('aethel_session_user'); location.reload(); } function backToEmail(){document.getElementById('apikey-container').classList.add('hidden');document.getElementById('login-container').classList.remove('hidden');}
         
         function trigger2FAFlow(e){document.getElementById('login-container').classList.add('hidden');document.getElementById('apikey-container').classList.add('hidden');document.getElementById('2fa-email-modal').classList.remove('hidden');document.getElementById('2fa-target-email').innerText=e;}
         function openPinEntry() { document.getElementById('2fa-email-modal').classList.add('hidden'); document.getElementById('2fa-pin-modal').classList.remove('hidden'); }
-        function verifyPinAndLogin() { if(document.getElementById('pin-input').value===userSettings[currentUser.email].pin){document.getElementById('2fa-pin-modal').classList.add('hidden');finalizeLogin();}else{document.getElementById('pin-error').classList.remove('hidden');} }
+        function verifyPinAndLogin() { 
+            const input = document.getElementById('pin-input').value;
+            const correctPin = (currentUser.authType === 'admin') ? ADMIN_PIN : userSettings[currentUser.email].pin;
+            if(input === correctPin){document.getElementById('2fa-pin-modal').classList.add('hidden');finalizeLogin();}else{document.getElementById('pin-error').classList.remove('hidden');} 
+        }
 
         async function generateApiKey(){const res=await fetch('/api/admin/generate-key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({duration:document.getElementById('api-duration').value})});const data=await res.json();apiKeys=data.keys;document.getElementById('new-key-text').innerText=data.key;document.getElementById('generated-key-display').classList.remove('hidden');renderApiKeys();}
         async function expireKey(k) { if(confirm('Revoke key?')) { await fetch('/api/admin/expire-key', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ key: k }) }); fetchAdminData(); } }
@@ -267,7 +279,7 @@
             if(t==='global-settings'){document.getElementById('view-settings').classList.remove('hidden'); document.getElementById('tab-btn-settings').classList.add(...activeClass);}
         }
         function openCreateModal(){document.getElementById('modal-create-project').classList.remove('hidden');} function closeCreateModal(){document.getElementById('modal-create-project').classList.add('hidden');}
-        function handleCreateProject(e){e.preventDefault();projects.push({id:Date.now(),owner:currentUser.email,name:document.getElementById('new-project-name').value,lastUpdated:new Date().toLocaleDateString(),files:[{name:'README.md',content:`# ${document.getElementById('new-project-name').value}\n\nWelcome.\n\`\`\`lua\nprint("Hello")\n\`\`\``,date:'Just now'}],collaborators:[]});syncUserData();closeCreateModal();renderProjects();}
+        function handleCreateProject(e){e.preventDefault();projects.push({id:Date.now(),owner:currentUser.email,name:document.getElementById('new-project-name').value,lastUpdated:new Date().toLocaleDateString(),files:[{name:'README.md',content:`# ${document.getElementById('new-project-name').value}\n\nWelcome.\n\`\`\`lua\nprint("Hello")\n\`\`\``,date:'Just now', publicId: Math.random().toString(36).substring(2), history:[]}],collaborators:[], publicId: Math.random().toString(36).substring(2)});syncUserData();closeCreateModal();renderProjects();}
         function renderProjects(){const g=document.getElementById('projects-grid');g.innerHTML='';if(projects.length===0){document.getElementById('empty-state').classList.remove('hidden');document.getElementById('empty-state').classList.add('flex');}else{document.getElementById('empty-state').classList.add('hidden');document.getElementById('empty-state').classList.remove('flex');projects.forEach(p=>{const isShared=p.owner&&p.owner!==currentUser.email;const tag=isShared?'<span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">Shared</span>':'';g.innerHTML+=`<div onclick="openProjectDetail(${p.id})" class="bg-white p-6 rounded-2xl shadow-sm border cursor-pointer hover:shadow-lg transition"><div class="flex justify-between"><h3 class="font-bold text-gray-800">${p.name}</h3>${tag}</div><p class="text-sm text-gray-500">${p.files.length} files</p></div>`;});}}
         
         function openProjectDetail(id){activeProjectId=id;const p=projects.find(x=>x.id===id);document.getElementById('detail-project-name').innerText=p.name;document.getElementById('detail-owner-tag').innerText=p.owner&&p.owner!==currentUser.email?`Owner: ${p.owner}`:'';renderFiles();switchTab('none');document.getElementById('view-project-detail').classList.remove('hidden');switchProjectTab('code'); renderCollaborators(); checkReadme(p);}
@@ -278,18 +290,8 @@
             document.getElementById('project-code-panel').classList.add('hidden');document.getElementById('project-settings-panel').classList.add('hidden'); 
             document.getElementById('ptab-code').classList.remove('border-orange-500'); document.getElementById('ptab-code').classList.add('border-transparent');
             document.getElementById('ptab-settings').classList.remove('border-orange-500'); document.getElementById('ptab-settings').classList.add('border-transparent');
-            
-            if(t==='code'){
-                document.getElementById('project-code-panel').classList.remove('hidden');
-                document.getElementById('ptab-code').classList.remove('border-transparent');
-                document.getElementById('ptab-code').classList.add('border-orange-500');
-            }
-            if(t==='settings'){
-                document.getElementById('project-settings-panel').classList.remove('hidden');
-                document.getElementById('ptab-settings').classList.remove('border-transparent');
-                document.getElementById('ptab-settings').classList.add('border-orange-500');
-                document.getElementById('setting-project-name').value=projects.find(x=>x.id===activeProjectId).name;renderCollaborators();
-            }
+            if(t==='code'){document.getElementById('project-code-panel').classList.remove('hidden');document.getElementById('ptab-code').classList.remove('border-transparent');document.getElementById('ptab-code').classList.add('border-orange-500');}
+            if(t==='settings'){document.getElementById('project-settings-panel').classList.remove('hidden');document.getElementById('ptab-settings').classList.remove('border-transparent');document.getElementById('ptab-settings').classList.add('border-orange-500');document.getElementById('setting-project-name').value=projects.find(x=>x.id===activeProjectId).name;renderCollaborators();}
         }
         
         function saveProjectName(){const p=projects.find(x=>x.id===activeProjectId);if(p.owner&&p.owner!==currentUser.email)return alert("Only the owner can rename."); p.name=document.getElementById('setting-project-name').value;syncUserData();document.getElementById('detail-project-name').innerText=p.name;alert('Saved');}
@@ -303,7 +305,6 @@
         function renderFiles(){
             const list=document.getElementById('file-list-container');list.innerHTML='';
             const p = projects.find(x=>x.id===activeProjectId);
-            // Folder logic grouping
             p.files.sort((a,b)=>a.name.localeCompare(b.name)).forEach((f,i)=>{
                 let display = f.name;
                 if(f.name.includes('/')) {
@@ -321,19 +322,73 @@
         function openFileViewer(i){activeFileIndex=i;const f=projects.find(x=>x.id===activeProjectId).files[i];document.getElementById('display-filename').innerText=f.name;readOnlyEditor.setValue(f.content);readOnlyEditor.clearSelection();if(f.name.endsWith('.md')){document.getElementById('md-toggle-container').classList.remove('hidden');document.getElementById('markdown-preview').innerHTML=marked.parse(f.content);hljs.highlightAll();document.querySelectorAll('#markdown-preview pre code').forEach(el=>{const btn=document.createElement('button');btn.className='copy-btn';btn.innerText='Copy';btn.onclick=()=>copyText(btn,el.innerText);el.parentElement.appendChild(btn)});toggleMdView('preview');}else{document.getElementById('md-toggle-container').classList.add('hidden');toggleMdView('code');}document.getElementById('view-project-detail').classList.add('hidden');document.getElementById('view-file-display').classList.remove('hidden');}
         function toggleMdView(m){const e=document.getElementById('readonly-editor'),p=document.getElementById('markdown-preview');if(m==='preview'){e.style.display='none';p.classList.remove('hidden');}else{e.style.display='block';p.classList.add('hidden');}}
         function copyText(b,t) { const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);b.innerText="Copied!";setTimeout(()=>b.innerText="Copy",2000); }
-        function openAddFileView(){editingFileIndex=-1;document.getElementById('view-project-detail').classList.add('hidden');document.getElementById('view-editor').classList.remove('hidden');document.getElementById('editor-filename').value='';aceEditor.setValue('');isEditing=true;}
+        function openAddFileView(){editingFileIndex=-1;document.getElementById('modal-add-file').classList.remove('hidden');}
+        function confirmAddFile(){document.getElementById('modal-add-file').classList.add('hidden');document.getElementById('view-project-detail').classList.add('hidden');document.getElementById('view-editor').classList.remove('hidden');document.getElementById('editor-filename').value='';aceEditor.setValue('');isEditing=true;}
         function cancelEdit(){document.getElementById('view-editor').classList.add('hidden');document.getElementById('view-project-detail').classList.remove('hidden');isEditing=false;}
-        function commitFile(){const n=document.getElementById('editor-filename').value,c=aceEditor.getValue(),p=projects.find(x=>x.id===activeProjectId);if(editingFileIndex>-1){p.files[editingFileIndex].content=c;}else{p.files.push({name:n,content:c,date:'Just now',type:'Code'});}syncUserData();renderFiles();cancelEdit();checkReadme(p);}
+        
+        function commitFile(){
+            const n=document.getElementById('editor-filename').value,c=aceEditor.getValue(),p=projects.find(x=>x.id===activeProjectId);
+            if(editingFileIndex>-1){
+                // Push History
+                if(!p.files[editingFileIndex].history) p.files[editingFileIndex].history = [];
+                p.files[editingFileIndex].history.push({content: p.files[editingFileIndex].content, date: p.files[editingFileIndex].date, author: currentUser.email});
+                // Update
+                p.files[editingFileIndex].content=c;
+                p.files[editingFileIndex].date='Just now';
+            }else{
+                p.files.push({name:n,content:c,date:'Just now',type:'Code', publicId: Math.random().toString(36).substring(2), history:[]});
+            }
+            syncUserData();renderFiles();cancelEdit();checkReadme(p);
+        }
+        
         function editCurrentFile(){editingFileIndex=activeFileIndex;const f=projects.find(x=>x.id===activeProjectId).files[activeFileIndex];document.getElementById('view-file-display').classList.add('hidden');document.getElementById('view-editor').classList.remove('hidden');document.getElementById('editor-filename').value=f.name;aceEditor.setValue(f.content);isEditing=true;}
         function downloadCurrentFile(){const f=projects.find(x=>x.id===activeProjectId).files[activeFileIndex],a=document.createElement('a');a.href=URL.createObjectURL(new Blob([f.content]));a.download=f.name;a.click();}
         function deleteCurrentFile(){if(confirm("Delete file?")){const p=projects.find(x=>x.id===activeProjectId);p.files.splice(activeFileIndex,1);syncUserData();renderFiles();checkReadme(p);document.getElementById('view-file-display').classList.add('hidden');document.getElementById('view-project-detail').classList.remove('hidden');}}
         function openRawView(){
             const p=projects.find(x=>x.id===activeProjectId);
             const f=p.files[activeFileIndex];
-            const url = `/raw/${encodeURIComponent(p.name)}/${encodeURIComponent(f.name)}`;
+            const url = `/raw/${p.publicId}/${f.publicId}`; // Randomized URL
             window.open(url, '_blank');
         }
         
+        // History Logic
+        function openHistory(){
+            const f=projects.find(x=>x.id===activeProjectId).files[activeFileIndex];
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            if(!f.history || f.history.length === 0) { list.innerHTML = '<div class="text-center text-gray-500 p-4">No history available.</div>'; }
+            else {
+                f.history.forEach((h, idx) => {
+                    list.innerHTML += `
+                    <div class="flex justify-between items-center p-3 hover:bg-gray-50 border-b">
+                        <div>
+                            <p class="text-sm font-bold text-gray-800">${h.date}</p>
+                            <p class="text-xs text-gray-500">By ${h.author}</p>
+                        </div>
+                        <button onclick="restoreVersion(${idx})" class="text-blue-600 text-xs border border-blue-200 px-2 py-1 rounded">Restore</button>
+                    </div>`;
+                });
+            }
+            document.getElementById('modal-history').classList.remove('hidden');
+        }
+        
+        function restoreVersion(idx){
+            if(confirm("Restore this version? Current content will be saved to history.")){
+                const p=projects.find(x=>x.id===activeProjectId);
+                const f=p.files[activeFileIndex];
+                const oldContent = f.history[idx].content;
+                
+                // Push current to history before restoring
+                f.history.push({content: f.content, date: 'Auto-Backup (Pre-Restore)', author: currentUser.email});
+                
+                f.content = oldContent;
+                f.date = 'Restored';
+                syncUserData();
+                document.getElementById('modal-history').classList.add('hidden');
+                openFileViewer(activeFileIndex); // Refresh view
+            }
+        }
+
         function openUploadModal(){document.getElementById('modal-upload-file').classList.remove('hidden');} function closeUploadModal(){document.getElementById('modal-upload-file').classList.add('hidden');}
         function handleFileSelect(e){const f=e.target.files[0]; const r=new FileReader(); r.onload=v=>{pendingUploadContent=v.target.result;document.getElementById('btn-confirm-upload').disabled=false;document.getElementById('upload-preview').classList.remove('hidden');document.getElementById('upload-filename').innerText=f.name;document.getElementById('btn-confirm-upload').classList.replace('bg-gray-300','bg-blue-600');}; r.readAsText(f);}
         function confirmUpload(){closeUploadModal(); editingFileIndex=-1; document.getElementById('view-project-detail').classList.add('hidden'); document.getElementById('view-editor').classList.remove('hidden'); document.getElementById('editor-filename').value=document.getElementById('upload-filename').innerText; aceEditor.setValue(pendingUploadContent); isEditing=true;}
