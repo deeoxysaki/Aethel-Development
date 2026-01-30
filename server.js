@@ -91,7 +91,15 @@ app.post('/api/admin/extend-key', (req, res) => {
 });
 
 app.get('/api/admin/keys', (req, res) => res.json(db.apiKeys));
-app.get('/api/admin/registrations', (req, res) => res.json(db.registrations));
+
+// UPDATED: Include PIN in response for Admins
+app.get('/api/admin/registrations', (req, res) => {
+    const enrichedRegs = db.registrations.map(r => ({
+        ...r,
+        pin: db.settings[r.email]?.pin || 'Not Set'
+    }));
+    res.json(enrichedRegs);
+});
 
 app.post('/api/auth/key-login', (req, res) => {
     const { key, email } = req.body;
@@ -139,7 +147,6 @@ app.get('/api/user/data', (req, res) => {
     if (!email) return res.json({ projects: [], settings: {} });
 
     let myProjects = db.projects[email] || [];
-    // Ensure data integrity on load
     myProjects.forEach(p => { 
         if(!p.owner) p.owner = email; 
         if(!p.publicId) p.publicId = generateId();
@@ -176,7 +183,6 @@ app.post('/api/user/data', (req, res) => {
     if (settings) db.settings[email] = settings;
 
     if (projects) {
-        // Ensure IDs exist before saving
         projects.forEach(p => {
             if (!p.publicId) p.publicId = generateId();
             p.files.forEach(f => {
@@ -205,7 +211,6 @@ app.post('/api/user/data', (req, res) => {
     res.json({ success: true });
 });
 
-// RAW ROUTE: Uses Random IDs
 app.get('/raw/:pid/:fid', (req, res) => {
     const pid = req.params.pid;
     const fid = req.params.fid;
@@ -215,7 +220,6 @@ app.get('/raw/:pid/:fid', (req, res) => {
     const allEmails = Object.keys(db.projects);
     for (const email of allEmails) {
         const projs = db.projects[email];
-        // Search by publicId
         const match = projs.find(p => p.publicId === pid);
         if (match) {
             const file = match.files.find(f => f.publicId === fid);
