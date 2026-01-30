@@ -188,8 +188,7 @@ app.get('/raw/:project/:file', (req, res) => {
     const fName = decodeURIComponent(req.params.file);
     
     let foundFile = null;
-    let foundProj = null;
-
+    
     const allEmails = Object.keys(db.projects);
     for (const email of allEmails) {
         const projs = db.projects[email];
@@ -198,27 +197,14 @@ app.get('/raw/:project/:file', (req, res) => {
             const file = match.files.find(f => f.name === fName);
             if (file) {
                 foundFile = file;
-                foundProj = match;
                 break;
             }
         }
     }
 
     if (foundFile) {
-        res.setHeader('Content-Type', 'text/html');
-        res.send(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>${fName} (Raw)</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <style>
-                    body { background-color: #0e0e0e; color: #f8f8f2; font-family: monospace; margin: 0; padding: 20px; white-space: pre-wrap; word-wrap: break-word; }
-                </style>
-            </head>
-            <body>${foundFile.content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</body>
-            </html>
-        `);
+        res.setHeader('Content-Type', 'text/plain');
+        res.send(foundFile.content);
     } else {
         res.status(404).send('404: File Not Found');
     }
