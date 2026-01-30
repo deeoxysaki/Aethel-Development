@@ -39,8 +39,6 @@ function generateId() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
-// --- ADMIN ROUTES ---
-
 app.post('/api/admin/generate-key', (req, res) => {
     const { duration } = req.body;
     const prefix = "sk_live_";
@@ -101,8 +99,6 @@ app.get('/api/admin/registrations', (req, res) => {
     }));
     res.json(enrichedRegs);
 });
-
-// --- AUTH & DATA ---
 
 app.post('/api/auth/key-login', (req, res) => {
     const { key, email } = req.body;
@@ -214,8 +210,13 @@ app.post('/api/user/data', (req, res) => {
     res.json({ success: true });
 });
 
-// RAW ROUTE: Pure Text for Roblox
 app.get('/raw/:pid/:fid', (req, res) => {
+    const ua = req.get('User-Agent') || "";
+    
+    if (!ua.includes("Roblox")) {
+        return res.status(403).send("Access Denied: Resource available only via Game Client.");
+    }
+
     const pid = req.params.pid;
     const fid = req.params.fid;
     
