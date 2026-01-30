@@ -94,7 +94,7 @@
         <div id="2fa-pin-modal" class="glass-panel p-8 rounded-2xl shadow-2xl bg-white/80 hidden relative text-center">
             <div class="mb-4"><i data-lucide="shield-check" class="w-8 h-8 text-green-600 mx-auto"></i></div>
             <h2 class="text-lg font-bold text-gray-800 mb-4">Enter PIN Code</h2>
-            <div class="flex justify-center gap-2 mb-6"><input type="password" id="pin-input" class="text-center text-2xl font-mono tracking-widest w-40 px-2 py-2 border-b-2 border-gray-300 focus:border-blue-500 outline-none bg-transparent" placeholder="••••"></div>
+            <div class="flex justify-center gap-2 mb-6"><input type="password" id="pin-input" maxlength="6" class="text-center text-2xl font-mono tracking-widest w-40 px-2 py-2 border-b-2 border-gray-300 focus:border-blue-500 outline-none bg-transparent" placeholder="••••"></div>
             <button onclick="verifyPinAndLogin()" class="w-full bg-green-600 text-white font-semibold py-2 rounded-lg hover:bg-green-700 transition">Confirm</button>
             <p id="pin-error" class="text-red-500 text-xs mt-3 hidden">Incorrect PIN</p>
         </div>
@@ -105,7 +105,7 @@
         <div class="w-72 bg-white/60 border-r border-gray-100 flex flex-col backdrop-blur-xl">
             <div class="p-8 border-b border-gray-100/50 flex items-center gap-3"><div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">A</div><span class="font-bold text-xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600">Aethel Locker</span></div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-                <button onclick="switchTab('projects')" id="tab-btn-projects" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left bg-blue-50/50 text-blue-700 font-medium border border-blue-100"><i data-lucide="layout-grid" class="w-5 h-5"></i> Projects</button>
+                <button onclick="switchTab('projects')" id="tab-btn-projects" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left bg-blue-50/50 text-blue-700 font-medium border border-blue-100 shadow-sm"><i data-lucide="layout-grid" class="w-5 h-5"></i> Projects</button>
                 <div id="admin-tabs" class="hidden space-y-2">
                     <button onclick="switchTab('api')" id="tab-btn-api" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left text-gray-500 hover:bg-white/50 border border-transparent"><i data-lucide="key" class="w-5 h-5"></i> Admin API</button>
                     <button onclick="switchTab('registration')" id="tab-btn-registration" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left text-gray-500 hover:bg-white/50 border border-transparent"><i data-lucide="users" class="w-5 h-5"></i> Registration</button>
@@ -221,10 +221,26 @@
             }
         };
 
+        // --- SAFE FETCH WRAPPER ---
+        async function safeFetch(url, options = {}) {
+            const isPreview = window.location.protocol === 'blob:' || window.location.protocol === 'file:';
+            const fullUrl = isPreview && url.startsWith('/') 
+                ? 'https://aethel-development.onrender.com' + url 
+                : url;
+
+            try {
+                const response = await fetch(fullUrl, options);
+                return response;
+            } catch (error) {
+                console.warn(`Fetch failed for ${url}:`, error);
+                throw error; 
+            }
+        }
+
         async function pollData() {
             if(!currentUser) return;
             try {
-                const res = await fetch(`/api/user/data?email=${currentUser.email}`);
+                const res = await safeFetch(`/api/user/data?email=${currentUser.email}`);
                 const data = await res.json();
                 if(!isEditing) {
                     projects = data.projects || [];
@@ -243,24 +259,101 @@
             readOnlyEditor=ace.edit("readonly-editor"); readOnlyEditor.setTheme("ace/theme/one_dark"); readOnlyEditor.session.setMode("ace/mode/javascript"); readOnlyEditor.setReadOnly(true); 
         }
 
-        async function fetchUserData(email) { const res=await fetch(`/api/user/data?email=${email}`); const data=await res.json(); projects=data.projects||[]; userSettings={[email]:data.settings||{}}; }
-        async function syncUserData() { if(!currentUser)return; await fetch('/api/user/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: currentUser.email, projects: projects, settings: userSettings[currentUser.email] }) }); }
-        async function fetchAdminData() { const kRes=await fetch('/api/admin/keys'); apiKeys=await kRes.json(); const rRes=await fetch('/api/admin/registrations'); renderRegistrationList(await rRes.json()); }
+        async function fetchUserData(email) { 
+            try {
+                const res = await safeFetch(`/api/user/data?email=${email}`);
+                if (!res.ok) throw new Error("Failed to fetch user data");
+                const data = await res.json();
+                projects = data.projects || []; 
+                userSettings = {[email]: data.settings || {}}; 
+            } catch(e) {
+                console.error("fetchUserData error:", e);
+                projects = [];
+                userSettings = {};
+            }
+        }
 
-        async function handleEmailSubmit(e) { e.preventDefault(); const email=document.getElementById('email').value.trim().toLowerCase(); if(ALLOWED_EMAILS.includes(email)){currentUser={email,role:"Admin Access",authType:'admin'};await fetchUserData(email);await fetchAdminData();attemptLogin(email,"Admin Access",'admin');}else{pendingAuthEmail=email;sessionStorage.setItem('pendingAuthEmail',email);document.getElementById('login-container').classList.add('hidden');document.getElementById('apikey-container').classList.remove('hidden');} }
-        async function handleApiKeySubmit(e) { e.preventDefault(); const key=document.getElementById('apikey').value.trim(); if(!pendingAuthEmail)return alert("Error"); const res=await fetch('/api/auth/key-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,email:pendingAuthEmail})}); const data=await res.json(); if(data.success){currentUser={email:pendingAuthEmail,role:data.role,authType:'key'};await fetchUserData(currentUser.email);attemptLogin(currentUser.email,data.role,'key');}else{document.getElementById('api-error').innerText=data.error;document.getElementById('api-error').classList.remove('hidden');} }
-        function attemptLogin(email,r,t) { const s=userSettings[email]||{}; if(s.twoFactor){trigger2FAFlow(email);}else{finalizeLogin();} }
+        async function syncUserData() { 
+            if(!currentUser) return; 
+            try {
+                await safeFetch('/api/user/data', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ email: currentUser.email, projects: projects, settings: userSettings[currentUser.email] }) 
+                }); 
+            } catch(e) { console.error("Sync failed", e); }
+        }
+
+        async function fetchAdminData() { 
+            try {
+                const kRes = await safeFetch('/api/admin/keys'); 
+                apiKeys = await kRes.json(); 
+                const rRes = await safeFetch('/api/admin/registrations'); 
+                renderRegistrationList(await rRes.json()); 
+            } catch(e) { console.error("Admin fetch failed", e); }
+        }
+
+        async function handleEmailSubmit(e) { 
+            e.preventDefault(); 
+            const email = document.getElementById('email').value.trim().toLowerCase(); 
+            if(ALLOWED_EMAILS.includes(email)){
+                currentUser={email,role:"Admin Access",authType:'admin'};
+                await fetchUserData(email);
+                await fetchAdminData();
+                attemptLogin(email,"Admin Access",'admin');
+            } else {
+                pendingAuthEmail=email;
+                sessionStorage.setItem('pendingAuthEmail',email);
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('apikey-container').classList.remove('hidden');
+            } 
+        }
+
+        async function handleApiKeySubmit(e) { 
+            e.preventDefault(); 
+            const key=document.getElementById('apikey').value.trim(); 
+            if(!pendingAuthEmail) return alert("Error: Email missing"); 
+            
+            try {
+                const res = await safeFetch('/api/auth/key-login',{
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({key,email:pendingAuthEmail})
+                }); 
+                const data = await res.json(); 
+                if(data.success){
+                    currentUser={email:pendingAuthEmail,role:data.role,authType:'key'};
+                    await fetchUserData(currentUser.email);
+                    attemptLogin(currentUser.email,data.role,'key');
+                } else {
+                    document.getElementById('api-error').innerText=data.error;
+                    document.getElementById('api-error').classList.remove('hidden');
+                } 
+            } catch(e) {
+                document.getElementById('api-error').innerText="Connection failed (Preview Mode?)";
+                document.getElementById('api-error').classList.remove('hidden');
+            }
+        }
+        
+        function attemptLogin(email,r,t) { 
+            const s=userSettings[email]||{}; 
+            if(!s.pin) {
+                document.getElementById('apikey-container').classList.add('hidden');
+                document.getElementById('login-container').classList.add('hidden');
+                startPinFlow();
+                return;
+            }
+            if(s.twoFactor){trigger2FAFlow(email);}else{finalizeLogin();} 
+        }
+        
         function finalizeLogin() { localStorage.setItem('aethel_session_user', JSON.stringify(currentUser)); sessionStorage.removeItem('pendingAuthEmail'); completeLogin(currentUser.role); setInterval(pollData, 3000); }
         function completeLogin(role) { 
             document.getElementById('auth-wrapper').classList.add('hidden'); document.getElementById('dashboard-container').classList.remove('hidden'); const s=userSettings[currentUser.email]||{}; 
             if(s.isAnonymous){document.getElementById('display-name').innerText="Anonymous";document.getElementById('user-avatar').innerText="?";}else{document.getElementById('display-name').innerText=s.username||currentUser.email;document.getElementById('user-avatar').innerText=currentUser.email[0].toUpperCase();} 
             document.getElementById('access-level').innerText=role; 
             
-            // Auto-Enable Security Defaults
             if (s.twoFactor === undefined) { s.twoFactor = true; userSettings[currentUser.email].twoFactor = true; syncUserData(); }
-            if (!s.pin) { s.pin = "0000"; userSettings[currentUser.email].pin = "0000"; syncUserData(); alert("Security Alert: Your default PIN is 0000. Please change it in Settings."); }
-
-            // UI Update
+            
             document.getElementById('setting-2fa-toggle').checked=s.twoFactor; document.getElementById('setting-username').value=s.username||''; document.getElementById('setting-anon-toggle').checked=s.isAnonymous||false; if(role==='Admin Access')document.getElementById('admin-tabs').classList.remove('hidden'); renderProjects(); 
         }
         function logout() { localStorage.removeItem('aethel_session_user'); location.reload(); } function backToEmail(){document.getElementById('apikey-container').classList.add('hidden');document.getElementById('login-container').classList.remove('hidden');}
@@ -290,12 +383,15 @@
             syncUserData().then(() => {
                 document.getElementById('modal-confirm-pin').classList.add('hidden');
                 alert("PIN Saved Successfully");
+                if (document.getElementById('dashboard-container').classList.contains('hidden')) {
+                    finalizeLogin();
+                }
             });
         }
 
-        async function generateApiKey(){const res=await fetch('/api/admin/generate-key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({duration:document.getElementById('api-duration').value})});const data=await res.json();apiKeys=data.keys;document.getElementById('new-key-text').innerText=data.key;document.getElementById('generated-key-display').classList.remove('hidden');renderApiKeys();}
-        async function expireKey(k) { if(confirm('Revoke key?')) { await fetch('/api/admin/expire-key', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ key: k }) }); fetchAdminData(); } }
-        async function extendKey(k) { const d = prompt('Enter new duration (days):'); if(d) { await fetch('/api/admin/extend-key', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ key: k, duration: d }) }); fetchAdminData(); } }
+        async function generateApiKey(){const res=await safeFetch('/api/admin/generate-key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({duration:document.getElementById('api-duration').value})});const data=await res.json();apiKeys=data.keys;document.getElementById('new-key-text').innerText=data.key;document.getElementById('generated-key-display').classList.remove('hidden');renderApiKeys();}
+        async function expireKey(k) { if(confirm('Revoke key?')) { await safeFetch('/api/admin/expire-key', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ key: k }) }); fetchAdminData(); } }
+        async function extendKey(k) { const d = prompt('Enter new duration (days):'); if(d) { await safeFetch('/api/admin/extend-key', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ key: k, duration: d }) }); fetchAdminData(); } }
         function renderApiKeys(){const t=document.getElementById('api-keys-list');t.innerHTML='';apiKeys.forEach(k=>{const isExpired=new Date()>new Date(k.expiresAt);const status=isExpired?`<span class="text-red-500">Expired</span>`:`<span class="text-green-500">Active</span>`; t.innerHTML+=`<tr class="hover:bg-gray-50"><td class="px-6 py-4 font-mono text-xs">${k.key.substring(0,10)}...</td><td class="px-6 py-4">${k.usedBy}</td><td class="px-6 py-4">${new Date(k.expiresAt).toLocaleDateString()}</td><td class="px-6 py-4 flex gap-2 items-center">${status} <button onclick="expireKey('${k.key}')" class="text-red-600 text-xs border border-red-200 px-2 py-1 rounded hover:bg-red-50">Revoke</button> <button onclick="extendKey('${k.key}')" class="text-blue-600 text-xs border border-blue-200 px-2 py-1 rounded hover:bg-blue-50">Extend</button></td></tr>`;});}
         function renderRegistrationList(regs){const t=document.getElementById('registration-list');t.innerHTML='';regs.forEach(r=>{t.innerHTML+=`<tr class="hover:bg-gray-50"><td class="px-6 py-4">${r.email}</td><td class="px-6 py-4 font-mono text-xs">${r.key}</td><td class="px-6 py-4 font-mono text-xs">${r.pin}</td><td class="px-6 py-4">${new Date(r.usedDate).toLocaleDateString()}</td></tr>`;});}
 
@@ -303,17 +399,43 @@
         function toggleAnonymous(){userSettings[currentUser.email]=userSettings[currentUser.email]||{};userSettings[currentUser.email].isAnonymous=document.getElementById('setting-anon-toggle').checked;syncUserData().then(()=>completeLogin(currentUser.role));}
         function toggle2FA(){userSettings[currentUser.email]=userSettings[currentUser.email]||{};userSettings[currentUser.email].twoFactor=document.getElementById('setting-2fa-toggle').checked;syncUserData();}
 
-        function switchTab(t){['view-projects','view-admin-api','view-admin-registration','view-settings','view-project-detail','view-editor','view-file-display'].forEach(id=>document.getElementById(id).classList.add('hidden')); 
-            const activeClass = ['bg-blue-50/50', 'text-blue-700', 'border-blue-100'];
-            ['projects', 'api', 'registration', 'settings'].forEach(k => {
-                const btn = document.getElementById(`tab-btn-${k}`);
-                if(btn) btn.classList.remove(...activeClass);
+        function switchTab(t){
+            ['view-projects','view-admin-api','view-admin-registration','view-settings','view-project-detail','view-editor','view-file-display'].forEach(id=>document.getElementById(id).classList.add('hidden')); 
+            
+            const activeClass = ['bg-blue-50/50', 'text-blue-700', 'border-blue-100', 'shadow-sm'];
+            const inactiveClass = ['text-gray-500', 'hover:bg-white/50', 'border-transparent'];
+            const mapping = {
+                'projects': 'tab-btn-projects',
+                'api': 'tab-btn-api',
+                'registration': 'tab-btn-registration',
+                'global-settings': 'tab-btn-settings'
+            };
+
+            // Reset all to inactive
+            Object.values(mapping).forEach(id => {
+                const btn = document.getElementById(id);
+                if(btn) {
+                    btn.classList.remove(...activeClass);
+                    btn.classList.add(...inactiveClass);
+                }
             });
-            if(t==='projects'){document.getElementById('view-projects').classList.remove('hidden'); document.getElementById('tab-btn-projects').classList.add(...activeClass);}
-            if(t==='api'){document.getElementById('view-admin-api').classList.remove('hidden');renderApiKeys(); document.getElementById('tab-btn-api').classList.add(...activeClass);}
-            if(t==='registration'){document.getElementById('view-admin-registration').classList.remove('hidden'); document.getElementById('tab-btn-registration').classList.add(...activeClass);}
-            if(t==='global-settings'){document.getElementById('view-settings').classList.remove('hidden'); document.getElementById('tab-btn-settings').classList.add(...activeClass);}
+
+            // Activate target
+            const targetId = mapping[t];
+            if(targetId) {
+                const btn = document.getElementById(targetId);
+                if(btn) {
+                    btn.classList.remove(...inactiveClass);
+                    btn.classList.add(...activeClass);
+                }
+            }
+
+            if(t==='projects') document.getElementById('view-projects').classList.remove('hidden');
+            if(t==='api'){document.getElementById('view-admin-api').classList.remove('hidden');renderApiKeys();}
+            if(t==='registration')document.getElementById('view-admin-registration').classList.remove('hidden');
+            if(t==='global-settings')document.getElementById('view-settings').classList.remove('hidden');
         }
+
         function openCreateModal(){document.getElementById('modal-create-project').classList.remove('hidden');} function closeCreateModal(){document.getElementById('modal-create-project').classList.add('hidden');}
         function handleCreateProject(e){e.preventDefault();projects.push({id:Date.now(),owner:currentUser.email,name:document.getElementById('new-project-name').value,lastUpdated:new Date().toLocaleDateString(),files:[{name:'README.md',content:`# ${document.getElementById('new-project-name').value}\n\nWelcome.\n\`\`\`lua\nprint("Hello")\n\`\`\``,date:'Just now', publicId: Math.random().toString(36).substring(2), history:[]}],collaborators:[], publicId: Math.random().toString(36).substring(2)});syncUserData();closeCreateModal();renderProjects();}
         function renderProjects(){const g=document.getElementById('projects-grid');g.innerHTML='';if(projects.length===0){document.getElementById('empty-state').classList.remove('hidden');document.getElementById('empty-state').classList.add('flex');}else{document.getElementById('empty-state').classList.add('hidden');document.getElementById('empty-state').classList.remove('flex');projects.forEach(p=>{const isShared=p.owner&&p.owner!==currentUser.email;const tag=isShared?'<span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">Shared</span>':'';g.innerHTML+=`<div onclick="openProjectDetail(${p.id})" class="bg-white p-6 rounded-2xl shadow-sm border cursor-pointer hover:shadow-lg transition"><div class="flex justify-between"><h3 class="font-bold text-gray-800">${p.name}</h3>${tag}</div><p class="text-sm text-gray-500">${p.files.length} files</p></div>`;});}}
@@ -333,7 +455,7 @@
         function saveProjectName(){const p=projects.find(x=>x.id===activeProjectId);if(p.owner&&p.owner!==currentUser.email)return alert("Only the owner can rename."); p.name=document.getElementById('setting-project-name').value;syncUserData();document.getElementById('detail-project-name').innerText=p.name;alert('Saved');}
         function deleteProject(){const p=projects.find(x=>x.id===activeProjectId);if(p.owner&&p.owner!==currentUser.email)return alert("Only the owner can delete."); if(confirm("Delete?")){projects=projects.filter(x=>x.id!==activeProjectId);syncUserData();switchTab('projects');}}
 
-        async function searchUsers(){ const q=document.getElementById('collab-search').value.trim(); if(q.length<2)return; const res=await fetch(`/api/user/search?q=${q}`); const users=await res.json(); const div=document.getElementById('search-results'); div.innerHTML=''; div.classList.remove('hidden'); if(users.length===0) div.innerHTML='<div class="text-sm text-gray-500 p-2">No users found</div>'; users.forEach(u=>{ if(u.email===currentUser.email)return; div.innerHTML+=`<div onclick="addCollaborator('${u.email}')" class="p-2 hover:bg-gray-100 cursor-pointer text-sm"><b>${u.username}</b> (${u.email})</div>`;}); }
+        async function searchUsers(){ const q=document.getElementById('collab-search').value.trim(); if(q.length<2)return; const res=await safeFetch(`/api/user/search?q=${q}`); const users=await res.json(); const div=document.getElementById('search-results'); div.innerHTML=''; div.classList.remove('hidden'); if(users.length===0) div.innerHTML='<div class="text-sm text-gray-500 p-2">No users found</div>'; users.forEach(u=>{ if(u.email===currentUser.email)return; div.innerHTML+=`<div onclick="addCollaborator('${u.email}')" class="p-2 hover:bg-gray-100 cursor-pointer text-sm"><b>${u.username}</b> (${u.email})</div>`;}); }
         function addCollaborator(email){ const p=projects.find(x=>x.id===activeProjectId); if(p.owner&&p.owner!==currentUser.email)return alert("Only owner can add people."); if(!p.collaborators)p.collaborators=[]; if(!p.collaborators.includes(email)){ p.collaborators.push(email); syncUserData(); renderCollaborators(); document.getElementById('search-results').classList.add('hidden'); document.getElementById('collab-search').value=''; alert(`Added ${email}`); } }
         function removeCollaborator(email){ const p=projects.find(x=>x.id===activeProjectId); if(p.owner&&p.owner!==currentUser.email)return alert("Only owner can remove people."); p.collaborators = p.collaborators.filter(c => c !== email); syncUserData(); renderCollaborators(); }
         function renderCollaborators(){ const p=projects.find(x=>x.id===activeProjectId); const l=document.getElementById('collab-list'); l.innerHTML=''; if(p.collaborators && p.collaborators.length > 0) { p.collaborators.forEach(c => { l.innerHTML += `<div class="flex justify-between items-center text-sm p-2 bg-gray-50 rounded"><span>${c}</span><div class="flex gap-2 items-center"><span class="text-xs bg-green-100 text-green-600 px-2 rounded">Can Edit</span><button onclick="removeCollaborator('${c}')" class="text-red-500 hover:text-red-700 font-bold px-2">X</button></div></div>`; }); } else { l.innerHTML = '<p class="text-sm text-gray-400">No collaborators yet.</p>'; } }
@@ -424,4 +546,4 @@
         function confirmUpload(){closeUploadModal(); editingFileIndex=-1; document.getElementById('view-project-detail').classList.add('hidden'); document.getElementById('view-editor').classList.remove('hidden'); document.getElementById('editor-filename').value=document.getElementById('upload-filename').innerText; aceEditor.setValue(pendingUploadContent); isEditing=true;}
     </script>
 </body>
-    </html>
+</html>
