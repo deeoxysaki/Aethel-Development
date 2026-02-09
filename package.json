@@ -1,7 +1,7 @@
 {
-  "name": "aethel-locker",
+  "name": "luath-locker",
   "version": "1.0.0",
-  "description": "Aethel Locker Project Management System",
+  "description": "LuaKnight Project Management System",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
